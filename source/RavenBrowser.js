@@ -13,7 +13,7 @@ enyo.kind({
 		onErrorReceived:"showError",
 		onShowSettings:"showSettings",
 		onHideSettings:"hideSettings",
-		onServerChanged:"serverChanged"
+		onConnectionChanged:"connectionChanged"
 	},
 	components:[
 		{name:"mainPanel", kind:"enyo.Panels", arrangerKind:"CardSlideInArranger", draggable:false, style:"width:100%", fit:true, components:[
@@ -30,7 +30,9 @@ enyo.kind({
 	],
 	create:function() {
 		this.inherited(arguments);
-		this.setApi(new RavenApi());
+		var host = localStorage.getItem("raven-host") || "localhost";
+		var port = localStorage.getItem("raven-port") || 8080;
+		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port}));
 	},
 	changeTenant:function(sender,event) {
 		this.setSelectedTenant(event.tenant);
@@ -64,10 +66,13 @@ enyo.kind({
 	hideSettings:function(sender,event) {
 		this.$.mainPanel.setIndex(0);
 	},
-	serverChanged:function(sender,event) {
+	connectionChanged:function(sender,event) {
 		this.$.tenantPicker.loadTenants();
 		this.$.documentPicker.setTenantId(null);
 		this.$.documentViewer.setDocumentId(null);
+
+		localStorage.setItem("raven-host",this.getApi().getRavenHost());
+		localStorage.getItem("raven-port",this.getApi().getRavenPort());
 	},
 	apiChanged:function() {
 		this.$.tenantPicker.setApi(this.getApi());

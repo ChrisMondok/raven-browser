@@ -5,6 +5,7 @@ enyo.kind({
 	events:{
 		onTenantSelected:"",
 		onShowSettings:"",
+		onErrorReceived:""
 	},
 	published:{
 		tenants:null,
@@ -25,7 +26,14 @@ enyo.kind({
 		]},
 	],
 	apiChanged:function() {
-		this.getApi().getTenants(enyo.bind(this,"setTenants"));
+		this.loadTenants();
+	},
+	loadTenants:function() {
+		this.setTenants([]);
+		this.getApi().getTenants(enyo.bind(this,"setTenants"),enyo.bind(this,"handleError"));
+	},
+	handleError:function(sender,error) {
+		this.doErrorReceived({error:"Failed to load tenants"});
 	},
 	tenantsChanged:function() {
 		this.$.tenantList.setCount(this.getTenants().length);

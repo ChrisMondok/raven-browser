@@ -1,25 +1,31 @@
 enyo.kind({
 	name:"RavenApi",
+	tag:undefined,
 	published:{
-		ravenHost: "localhost",
-		ravenPort: 8080
+		ravenHost: "mds-d77gds1",
+		ravenPort: 8080,
+		timeout:3000
 	},
 	events:{
-		onConnectionChanged:""
+		onConnectionChanged:"",
 	},
-	getTenants:function(callback) {
+	getTenants:function(callback, errorCallback) {
 		var tenants = [];
-		new enyo.Ajax({url:this.getRavenUrl()+"databases"}).go()
-		.response(this,function(sender,response) {
+		var ajax = new enyo.Ajax({url:this.getRavenUrl()+"databases", timeout:this.getTimeout()});
+		ajax.go()
+		ajax.response(this,function(sender,response) {
 			callback(response);
 		});
+		if(errorCallback)
+			ajax.error(errorCallback);
 	},
-	getDocuments:function(tenantId,callback,progressCallback) {
+	getDocuments:function(tenantId, callback, progressCallback, errorCallback) {
 		return this.loadInMultipleRequests(
 			this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName",
-			{fetch:"__document_id", sort:"__document_id"},
+			{fetch:"__document_id", sort:"__document_id", timeout:this.getTimeout()},
 			callback,
-			progressCallback
+			progressCallback,
+			errorCallback
 		);
 	},
 	loadDocument:function(tenantId, documentId, callback, errorCallback) {
@@ -86,6 +92,12 @@ enyo.kind({
 	},
 	getRavenUrl:function() {
 		return "http://"+this.getRavenHost()+":"+this.getRavenPort()+"/";
+	},
+	ravenHostChanged:function() {
+		this.doConnectionChanged();
+	},
+	ravenPortChanged:function() {
+		this.doConnectionChanged();
 	}
 
 });

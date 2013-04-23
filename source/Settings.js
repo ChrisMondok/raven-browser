@@ -25,11 +25,11 @@ enyo.kind({
 		]},
 	],
 	apiChanged:function() {
-		this.$.ravenHostInput.setValue(this.getApi().getRavenUrl());
+		this.$.ravenHostInput.setValue(this.getApi().getRavenHost());
 		this.$.ravenPortInput.setValue(this.getApi().getRavenPort());
 	},
 	setRavenHost:function(sender,event) {
-		this.getApi().setRavenUrl(sender.getValue());
+		this.getApi().setRavenHost(sender.getValue());
 	},
 	setRavenPort:function(sender,event) {
 		this.getApi().setRavenPort(sender.getValue());

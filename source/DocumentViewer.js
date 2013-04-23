@@ -56,9 +56,7 @@ enyo.kind({
 			this.loadDocument();
 		}
 		else
-		{
 			this.$.documentIdInput.setValue("");
-		}
 	},
 	disabledChanged:function() {
 		var d = this.getDisabled();
