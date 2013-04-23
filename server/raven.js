@@ -1,4 +1,4 @@
-var ravenHost = "localhost";
+var ravenHost = "192.168.3.108";
 var ravenPort = 8080;
 var http = require('http');
 
@@ -49,6 +49,19 @@ exports.handleRequest = function(request,response) {
 	forwardRequest(request,response);
 }
 
-exports.setRavenURL = function(url) {
-	ravenURL = url;
+exports.getRavenHost = function() {
+	return ravenHost;
+}
+
+exports.setRavenHost = function(host) {
+	ravenHost = host;
+}
+
+exports.getRavenPort = function() {
+	return ravenPort;
+}
+
+exports.setRavenPort = function(port) {
+	console.log("Set port to "+port);
+	ravenPort = port;
 }

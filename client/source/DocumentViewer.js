@@ -7,13 +7,13 @@ enyo.kind({
 		tenantId:null,
 		documentId:null,
 		disabled:false,
+		api:null
 	},
 	handlers:{
 		onSaveDocument:"saveDocument"
 	},
 	events:{
 		onErrorReceived:"",
-		onSaveDocument:""
 	},
 	components:[
 		{kind:"onyx.Toolbar", components:[
@@ -42,15 +42,9 @@ enyo.kind({
 		this.setDisabled(!this.getDocumentId());
 	},
 	loadDocument:function() {
-		this.ajax = new enyo.Ajax({
-			url:"/raven/databases/"+this.getTenantId()+"/docs/"+this.getDocumentId()
-		});
-		this.ajax.go();
-		this.ajax.response(this,function(sender,response) {
-			this.gotResponse(response);
-		});
+		this.getApi().loadDocument(this.getTenantId(),this.getDocumentId(),enyo.bind(this,this.gotResponse));
 	},
-	gotResponse:function(response) {
+	gotResponse:function(sender,response) {
 		this.$.documentBodyInput.setValue(JSON.stringify(response,undefined,2));
 	},
 	documentIdChanged:function() {
@@ -74,28 +68,18 @@ enyo.kind({
 	},
 	saveDocument:function(sender,event) {
 		var input = this.$.documentBodyInput;
+		var value = input.getValue();
 		try
 		{
-			input.setValue(JSON.stringify(JSON.parse(input.getValue()),undefined,2));
+			input.setValue(JSON.stringify(JSON.parse(value),undefined,2));
 		}
 		catch(e)
 		{
 			this.doErrorReceived({error:e.message});
+			return;
 		}
-		this.doSaveDocument();
-	},
-	saveDocument:function(sender,event) {
-		var ajax = new enyo.Ajax({
-			method:"PUT",
-			url:"/raven/databases/"+this.getTenantId()+"/docs/"+this.getDocumentId(),
-			contentType:"application/json",
-			cacheBust:false,
-			postBody:JSON.parse(this.$.documentBodyInput.getValue())
-		});
-		ajax.go();
-		ajax.response(this,function(sender,response) {
-			this.gotSaveResponse(response);
-		});
+
+		this.getApi().saveDocument(this.getTenantId(), this.getDocumentId(), value);
 	},
 	gotSaveResponse:function(response) {
 		this.loadDocument();

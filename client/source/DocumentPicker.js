@@ -4,28 +4,26 @@ enyo.kind({
 	classes:"onyx",
 	published:{
 		tenantId:null,
-		documentIds:null,
+		documents:null,
+		api:null,
 		disabled:false
 	},
 	events:{
 		onErrorReceived:"",
-		onDocumentIdSelected:"",
+		onDocumentSelected:"",
 	},
 	components:[
-		{kind:"onyx.Toolbar", components:[
-			{content:"Documents"},
-		]},
-		{name:"loadingDrawer", kind:"Drawer", open:false, components:[
+		{name:"loadingDrawer", kind:"Drawer", open:true, components:[
 			{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"0 of 0"},
 			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true},
 		]},
-		{name:"documentIdList", onSelect:"selectDocumentId", kind:"List", style:"min-width:320px", fit:true, onSetupItem:"renderDocumentId", components:[
+		{name:"documentList", onSelect:"selectDocument", kind:"List", style:"min-width:320px", fit:true, onSetupItem:"renderDocument", components:[
 			{kind:"onyx.Item", components:[
 				{name:"documentId"},
 			]},
 		]},
 		{kind:"onyx.Toolbar", components:[
-			{kind:"FittableColumns", style:"width:100%", components:[
+			{kind:"FittableColumns", classes:"max-width", components:[
 				{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"reloadDocuments"},
 				{fit:true},
 				{name:"newButton", kind:"onyx.Button", content:"New", classes:"onyx-affirmative"}
@@ -35,83 +33,57 @@ enyo.kind({
 	create:function() {
 		this.inherited(arguments);
 		this.setDisabled(!this.getTenantId());
-		this.setDocumentIds([]);
+		this.setDocuments([]);
 	},
 	tenantIdChanged:function(){
+		var selection = this.$.documentList.getSelection();
+		for(var s in selection.selected) {
+			this.$.documentList.deselect(s);
+		}
 		var tenantId = this.getTenantId();
 		if(tenantId)
-			this.loadDocuments(0);
+			this.loadDocuments();
 		this.setDisabled(!tenantId);
 	},
-	loadDocuments:function(start) {
-		if(this.ajax)
-		{
-			this.ajax.xhr.abort();
-			delete this.ajax;
-		}
+	loadDocuments:function() {
+		enyo.job.stop("closeLoadingDrawer");
+		this.setDocuments([]);
 
-		if(!start)
-		{
-			this.setDocumentIds(new Array());
-			this.$.loadingBar.setProgress(0);
-		}
+		this.getApi().getDocuments(this.getTenantId(),
+			enyo.bind(this, function(documentIds) {
+				this.setDocuments(documentIds);
+			}),
+			enyo.bind(this, function(progress) {
+				this.$.loadingBar.animateProgressTo(progress.loaded * 100 / progress.total);
+				this.$.loadingDescription.setContent(progress.loaded+" of "+progress.total);
 
-		this.ajax = new enyo.Ajax({
-			url:"/raven/databases/"+this.getTenantId()+"/indexes/Raven/DocumentsByEntityName"
-		});
-		this.ajax.go({
-			fetch:"__document_id",
-			sort:"__document_id",
-			start:start,
-			pageSize:1024
-		});
-		this.ajax.response(this,function(sender,response) {
-			this.gotResponse(response);
-			delete this.ajax;
-		});
-		this.ajax.error(this,function(sender,errorCode) {
-			this.gotError(JSON.parse(sender.xhrResponse.body));
-			delete this.ajax;
-		});
+				if(progress.loaded == progress.total)
+					enyo.job("closeLoadingDrawer", enyo.bind(this, function() {
+							this.$.loadingDrawer.setOpen(false);
+						}),1000);
+			}));
+
+		this.$.loadingBar.setProgress(0);
+		this.$.loadingDrawer.setOpen(true);
+		this.$.loadingDescription.setContent("0 of 0");
 	},
 	reloadDocuments:function(sender,event) {
 		this.loadDocuments(0)
 	},
-	gotResponse:function(response) {
-		var ids = this.getDocumentIds();
-
-		for(var i = 0; i < response.Results.length; i++)
-			ids.push(response.Results[i].__document_id);
-
-		this.$.loadingDescription.setContent(ids.length+" of "+response.TotalResults);
-
-		var percent = ids.length*100/response.TotalResults;
-		this.$.loadingBar.animateProgressTo(percent);
-		if(percent < 100)
-		{
-			this.loadDocuments(ids.length);
-			this.$.loadingDrawer.setOpen(true);
-		}
-		else
-		{
-			this.documentIdsChanged();
-			this.$.loadingDrawer.setOpen(false);
-		}
-	},
 	gotError:function(response) {
 		this.doErrorReceived({error:response.Error});
 	},
-	documentIdsChanged:function() {
-		this.$.documentIdList.setCount(this.getDocumentIds().length);
-		this.$.documentIdList.refresh();
+	documentsChanged:function() {
+		this.$.documentList.setCount(this.getDocuments().length);
+		this.$.documentList.refresh();
 	},
-	renderDocumentId:function(sender,event) {
-		this.$.documentId.setContent(this.getDocumentIds()[event.index]);
+	renderDocument:function(sender,event) {
+		this.$.documentId.setContent(this.getDocuments()[event.index].__document_id);
 		this.$.item.addRemoveClass("selected",sender.isSelected(event.index));
 		return true;
 	},
-	selectDocumentId:function(sender,event) {
-		this.doDocumentIdSelected({documentId:this.getDocumentIds()[event.index]});
+	selectDocument:function(sender,event) {
+		this.doDocumentSelected({documentId:this.getDocuments()[event.index].__document_id});
 	},
 	disabledChanged:function() {
 		var d = this.getDisabled();

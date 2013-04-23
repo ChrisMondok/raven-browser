@@ -7,5 +7,7 @@ enyo.depends(
 	//"KeyValueEditor.js",
 	"DocumentPicker.js",
 	"DocumentViewer.js",
-	"TenantPicker.js"
+	"TenantPicker.js",
+	"Settings.js",
+	"RavenAPI.js"
 );

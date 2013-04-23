@@ -4,32 +4,28 @@ enyo.kind({
 	classes:"onyx onyx-dark",
 	events:{
 		onTenantSelected:"",
+		onShowSettings:"",
 	},
 	published:{
-		tenants:null
+		tenants:null,
+		api:null
 	},
 	components:[
-		{kind:"onyx.Toolbar", components:[
-			{content:"Tenants"},
-		]},
 		{name:"tenantList", kind:"List", style:"min-width:320px", onSetupItem:"renderTenant", onSelect:"selectTenant", fit:true, components:[
 			{kind:"onyx.Item", components:[
 				{name:"tenantName"},
 			]},
 		]},
+		{kind:"onyx.Toolbar", components:[
+			{kind:"FittableColumns", classes:"max-width", components:[
+				{kind:"onyx.Button", content:"Reload", ontap:"loadTenants"},
+				{fit:true},
+				{kind:"onyx.Button", content:"Settings", ontap:"doShowSettings"}
+			]},
+		]},
 	],
-	create:function() {
-		this.inherited(arguments);
-		this.loadTenants();
-	},
-	loadTenants:function() {
-		var ajax = new enyo.Ajax({
-			url:"/raven/databases"
-		});
-		ajax.go();
-		ajax.response(this,function(sender,response) {
-			this.setTenants(response);
-		});
+	apiChanged:function() {
+		this.getApi().getTenants(enyo.bind(this,"setTenants"));
 	},
 	tenantsChanged:function() {
 		this.$.tenantList.setCount(this.getTenants().length);
