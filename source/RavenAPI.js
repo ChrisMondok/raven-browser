@@ -51,6 +51,32 @@ enyo.kind({
 		if(errorCallback)
 			ajax.error(errorCallback);
 	},
+	createDocument:function(tenantId, documentId, callback, errorCallback) {
+		var ajax = new enyo.Ajax({
+			method:"PUT",
+			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
+			contentType:"application/json",
+			cacheBust:false,
+			postBody:{data:"goes here"}
+		});
+		ajax.go();
+		if(callback)
+			ajax.response(callback);
+		if(errorCallback)
+			ajax.error(errorCallback);
+	},
+	deleteDocument:function(tenantId, documentId, callback, errorCallback) {
+		var ajax = new enyo.Ajax({
+			method:"DELETE",
+			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
+			cacheBust:false,
+		});
+		ajax.go();
+		if(callback)
+			ajax.response(callback);
+		if(errorCallback)
+			ajax.error(errorCallback);
+	},
 	loadInMultipleRequests:function(url,params,callback,progressCallback,errorCallback) {
 		var loader = {
 			ajax:null,

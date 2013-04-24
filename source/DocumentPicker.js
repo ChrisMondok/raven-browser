@@ -24,9 +24,20 @@ enyo.kind({
 		]},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", classes:"max-width", components:[
-				{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"reloadDocuments"},
+				{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"loadDocuments"},
 				{fit:true},
-				{name:"newButton", kind:"onyx.Button", content:"New", classes:"onyx-affirmative"}
+				{kind:"onyx.MenuDecorator", components:[
+					{name:"newButton", kind:"onyx.Button", content:"New"},
+					{name:"createPopup", kind:"onyx.ContextualPopup", title:"Create document", floating:true,
+						actionButtons:[
+							{content:"Create", classes:"onyx-affirmative", ontap:"createDocument"}
+						],
+						components:[
+							{kind:"onyx.InputDecorator", components:[
+								{name:"documentIdInput", kind:"onyx.Input", placeholder:"Document Id"}
+							]},
+						]},
+				]}
 			]},
 		]},
 	],
@@ -67,9 +78,6 @@ enyo.kind({
 		this.$.loadingDrawer.setOpen(true);
 		this.$.loadingDescription.setContent("0 of 0");
 	},
-	reloadDocuments:function(sender,event) {
-		this.loadDocuments(0)
-	},
 	gotError:function(response) {
 		this.doErrorReceived({error:response.Error});
 	},
@@ -91,4 +99,8 @@ enyo.kind({
 		for(var item in cmps)
 			this.$[cmps[item]].setDisabled(d);
 	},
+	createDocument:function(sender,event) {
+		this.$.createPopup.hide();
+		this.getApi().createDocument(this.getTenantId(),this.$.documentIdInput.getValue());
+	}
 });

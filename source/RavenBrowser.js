@@ -48,8 +48,11 @@ enyo.kind({
 			this.$.slidingPanels.setIndex(1);
 	},
 	selectedDocumentChanged:function() {
+		var selectedDocument = this.getSelectedDocument();
 		this.$.documentViewer.setTenantId(this.getSelectedTenant());
-		this.$.documentViewer.setDocumentId(this.getSelectedDocument());
+		this.$.documentViewer.setDocumentId(selectedDocument);
+		if(selectedDocument)
+			this.$.documentViewer.loadDocument();
 		if(enyo.Panels.isScreenNarrow())
 			this.$.slidingPanels.setIndex(2);
 	},
