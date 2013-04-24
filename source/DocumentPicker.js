@@ -5,7 +5,8 @@ enyo.kind({
 	published:{
 		tenantId:null,
 		documents:null,
-		api:null
+		api:null,
+		sortFunction:undefined
 	},
 	entityTypes:null,
 	events:{
@@ -32,7 +33,28 @@ enyo.kind({
 		this.inherited(arguments);
 		this.$.reloadButton.setDisabled(!this.getTenantId());
 		this.setDocuments([]);
-		window.D = this;
+		this.setSortFunction(function(a,b) {
+			var aType = a["@metadata"]["Raven-Entity-Name"];
+			var bType = b["@metadata"]["Raven-Entity-Name"];
+			if(aType && bType)
+			{
+				if(aType < bType)
+					return -1;
+				else
+					if(aType > bType)
+						return 1;
+			}
+			else
+			{
+				if(aType)
+					return -1;
+				else
+					return 1;
+			}
+			return 0;
+		});
+
+		window.DP = this;
 	},
 	tenantIdChanged:function(){
 		var selection = this.$.documentList.getSelection();
@@ -69,7 +91,17 @@ enyo.kind({
 	gotError:function(response) {
 		this.doErrorReceived({error:response.Error});
 	},
-	documentsChanged:function() {
+	setDocuments:function(docs) {
+		var sortFn = this.getSortFunction();
+		if(sortFn)
+			docs.sort(sortFn);
+
+		var oldValue = this.documents;
+		this.documents = docs;
+		if(oldValue != docs)
+			this.documentsChanged(oldValue,docs)
+	},
+	documentsChanged:function(oldValue,newValue) {
 		var documents = this.getDocuments();
 		this.entityTypes = [];
 		for(var i in documents)
@@ -84,13 +116,20 @@ enyo.kind({
 	},
 	renderDocument:function(sender,event) {
 		var doc = this.getDocuments()[event.index];
+
 		this.$.documentId.setContent(doc.__document_id);
-		this.$.item.addRemoveClass("selected",sender.isSelected(event.index));
+
 		var eType = doc["@metadata"]["Raven-Entity-Name"];
-		if(eType)
-			this.$.item.applyStyle("border-left","0.5ex solid hsl("+360*this.entityTypes.indexOf(eType)/this.entityTypes.length+",100%,50%)");
+		if(this.entityTypes.length > 1)
+			if(eType)
+				this.$.item.applyStyle("border-left","0.5ex solid hsl("+360*this.entityTypes.indexOf(eType)/this.entityTypes.length+",100%,50%)");
+			else
+				this.$.item.applyStyle("border-left","0.5ex solid #888");
 		else
-			this.$.item.applyStyle("border-left","0.5ex solid #888");
+			this.$.item.applyStyle("border-left","none");
+
+		this.$.item.addRemoveClass("selected",sender.isSelected(event.index));
+
 		return true;
 	},
 	selectDocument:function(sender,event) {
