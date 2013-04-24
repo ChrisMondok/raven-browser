@@ -91,3 +91,15 @@
 {
 	font-size:1em;
 }
+
+.footer-drawer
+{
+	box-shadow:0 0 1em rgba(0,0,0,0.75);
+	background-color:white;
+}
+
+textarea
+{
+	border:none;
+	outline:none;
+}

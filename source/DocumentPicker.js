@@ -12,12 +12,12 @@ enyo.kind({
 		onDocumentSelected:"",
 	},
 	components:[
-		{name:"documentList", onSelect:"selectDocument", kind:"List", style:"min-width:320px", fit:true, onSetupItem:"renderDocument", components:[
+		{name:"documentList", onSelect:"selectDocument", kind:"List", fit:true, onSetupItem:"renderDocument", components:[
 			{kind:"onyx.Item", components:[
 				{name:"documentId"},
 			]},
 		]},
-		{name:"loadingDrawer", kind:"Drawer", open:true, components:[
+		{name:"loadingDrawer", kind:"Drawer", classes:"footer-drawer", open:false, components:[
 			{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"0 of 0"},
 			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true},
 		]},

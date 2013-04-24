@@ -22,10 +22,10 @@ enyo.kind({
 				{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
 			]},
 		]},
-		{name:"savedMessageDrawer", open:false, kind:"Drawer", components:[
-			{name:"savedMessage", content:"Document saved"}
-		]},
 		{name:"documentBodyInput", kind:"onyx.TextArea", fit:true, style:"width:100%; resize:none; white-space:nowrap"},
+		{name:"savedMessageDrawer", classes:"footer-drawer", open:false, kind:"Drawer", components:[
+			{name:"savedMessage", content:"Document saved", classes:"nice-padding"}
+		]},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", style:"width:100%", components:[
 				{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument", disabled:true},
