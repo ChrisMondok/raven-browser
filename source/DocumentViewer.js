@@ -6,7 +6,6 @@ enyo.kind({
 	published:{
 		tenantId:null,
 		documentId:null,
-		disabled:false,
 		api:null
 	},
 	handlers:{
@@ -29,10 +28,10 @@ enyo.kind({
 		{name:"documentBodyInput", kind:"onyx.TextArea", fit:true, style:"width:100%; resize:none; white-space:nowrap"},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", style:"width:100%", components:[
-				{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument"},
+				{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument", disabled:true},
 				{fit:true},
 				{kind:"onyx.MenuDecorator", components:[
-					{name:"deleteButton", kind:"onyx.Button", content:"Delete"},
+					{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
 					{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
 						components:[
 							{content:"This cannot be undone"},
@@ -41,7 +40,7 @@ enyo.kind({
 							{content:"Delete", classes:"onyx-negative", ontap:"deleteDocument"}
 					]},
 				]},
-				{name:"saveButton", kind:"onyx.Button", classes:"onyx-affirmative", content:"Save", ontap:'saveDocument'},
+				{name:"saveButton", kind:"onyx.Button", classes:"onyx-affirmative", content:"Save", ontap:'saveDocument', disabled:true},
 			]},
 		]},
 	],
@@ -69,13 +68,7 @@ enyo.kind({
 		this.$.deleteButton.setDisabled(true);
 	},
 	tenantIdChanged:function() {
-		this.setDisabled(!this.getTenantId());
-	},
-	disabledChanged:function() {
-		var d = this.getDisabled();
-		var cmps = ["documentIdInput", "documentBodyInput"];
-		for(var item in cmps)
-			this.$[cmps[item]].setDisabled(d);
+		this.setDocumentId("");
 	},
 	saveDocument:function(sender,event) {
 		var input = this.$.documentBodyInput;
@@ -99,7 +92,7 @@ enyo.kind({
 		this.doDocumentSaved(response);
 	},
 	documentSaveFailed:function(sender,error) {
-		this.doErrorReceived({error:"Failed to save document"});
+		this.doErrorReceived({error:"Failed to save document."});
 	},
 	documentIdInputChanged:function(sender,event) {
 		this.setDocumentId(sender.getValue());
@@ -120,6 +113,6 @@ enyo.kind({
 		this.$.documentBodyInput.setValue("");
 	},
 	documentDeleteFailed:function(sender,event) {
-		debugger;
+		this.doErrorReceived({error:"Failed to delete document."});
 	},
 });
