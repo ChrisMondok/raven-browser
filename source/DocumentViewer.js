@@ -22,7 +22,7 @@ enyo.kind({
 				{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
 			]},
 		]},
-		{name:"documentBodyInput", kind:"onyx.TextArea", fit:true, style:"width:100%; resize:none; white-space:nowrap"},
+		{name:"documentBodyInput", kind:"onyx.TextArea", fit:true, style:"width:100%; resize:none"},
 		{name:"savedMessageDrawer", classes:"footer-drawer", open:false, kind:"Drawer", components:[
 			{name:"savedMessage", content:"Document saved", classes:"nice-padding"}
 		]},

@@ -127,7 +127,7 @@ enyo.kind({
 
 		var eType = doc["@metadata"]["Raven-Entity-Name"];
 		var eColor = "#888";
-		if(this.entityTypes.length > 1)
+		if(this.entityTypes.length)
 		{
 			if(eType)
 				eColor = "hsl("+360*this.entityTypes.indexOf(eType)/this.entityTypes.length+",100%,50%)";
