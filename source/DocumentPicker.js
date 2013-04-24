@@ -12,14 +12,14 @@ enyo.kind({
 		onDocumentSelected:"",
 	},
 	components:[
-		{name:"loadingDrawer", kind:"Drawer", open:true, components:[
-			{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"0 of 0"},
-			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true},
-		]},
 		{name:"documentList", onSelect:"selectDocument", kind:"List", style:"min-width:320px", fit:true, onSetupItem:"renderDocument", components:[
 			{kind:"onyx.Item", components:[
 				{name:"documentId"},
 			]},
+		]},
+		{name:"loadingDrawer", kind:"Drawer", open:true, components:[
+			{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"0 of 0"},
+			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true},
 		]},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", classes:"max-width", components:[
@@ -40,7 +40,7 @@ enyo.kind({
 		var tenantId = this.getTenantId();
 		if(tenantId)
 			this.loadDocuments();
-		this.setDisabled(!tenantId);
+		this.$.reloadButton.setDisabled(!tenantId);
 	},
 	loadDocuments:function() {
 		enyo.job.stop("closeLoadingDrawer");
