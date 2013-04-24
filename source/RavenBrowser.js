@@ -3,13 +3,15 @@ enyo.kind({
 	kind: "FittableRows",
 	fit: true,
 	published:{
-		selectedTenant:null,
-		selectedDocument:null,
 		api:null
 	},
+	events:{
+		onDocumentSelected:"",
+		onTenantSelected:"",
+	},
 	handlers:{
-		onTenantSelected:"changeTenant",
-		onDocumentSelected:"showDocument",
+		onTenantSelected:"selectTenant",
+		onDocumentSelected:"selectDocument",
 		onErrorReceived:"showError",
 		onShowSettings:"showSettings",
 		onHideSettings:"hideSettings",
@@ -34,22 +36,16 @@ enyo.kind({
 		var port = localStorage.getItem("raven-port") || 8080;
 		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port}));
 	},
-	changeTenant:function(sender,event) {
-		this.setSelectedTenant(event.tenant);
-	},
-	showDocument:function(sender,event) {
-		this.setSelectedDocument(event.documentId);
-	},
-	selectedTenantChanged:function() {
-		var tenant = this.getSelectedTenant();
+	selectTenant:function(sender,event) {
+		var tenant = event.tenant;
 		this.$.documentPicker.setTenantId(tenant);
-		this.setSelectedDocument(null);
+		this.$.documentViewer.setTenantId(tenant);
+		this.doDocumentSelected({documentId:null});
 		if(enyo.Panels.isScreenNarrow())
 			this.$.slidingPanels.setIndex(1);
 	},
-	selectedDocumentChanged:function() {
-		var selectedDocument = this.getSelectedDocument();
-		this.$.documentViewer.setTenantId(this.getSelectedTenant());
+	selectDocument:function(sender,event) {
+		var selectedDocument = event.documentId;
 		this.$.documentViewer.setDocumentId(selectedDocument);
 		if(selectedDocument)
 			this.$.documentViewer.loadDocument();
@@ -71,8 +67,8 @@ enyo.kind({
 	},
 	connectionChanged:function(sender,event) {
 		this.$.tenantPicker.loadTenants();
-		this.$.documentPicker.setTenantId(null);
-		this.$.documentViewer.setDocumentId(null);
+
+		this.doTenantSelected({tenant:null});
 
 		localStorage.setItem("raven-host",this.getApi().getRavenHost());
 		localStorage.getItem("raven-port",this.getApi().getRavenPort());
