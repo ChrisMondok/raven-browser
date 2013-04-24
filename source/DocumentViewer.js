@@ -37,6 +37,7 @@ enyo.kind({
 							{content:"This cannot be undone"},
 						],
 						actionButtons:[
+							{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
 							{content:"Delete", classes:"onyx-negative", ontap:"deleteDocument"}
 					]},
 				]},
@@ -104,9 +105,12 @@ enyo.kind({
 				this.$.savedMessageDrawer.setOpen(false);
 			}),2500);
 	},
-	deleteDocument:function(sender,event) {
-		this.getApi().deleteDocument(this.getTenantId(), this.getDocumentId(), enyo.bind(this,"documentDeleted"), enyo.bind(this,"documentDeleteFailed"));
+	closeDeletePopup:function() {
 		this.$.deletePopup.hide();
+	},
+	deleteDocument:function(sender,event) {
+		this.closeDeletePopup();
+		this.getApi().deleteDocument(this.getTenantId(), this.getDocumentId(), enyo.bind(this,"documentDeleted"), enyo.bind(this,"documentDeleteFailed"));
 	},
 	documentDeleted:function(sender,event) {
 		this.setDocumentId(null);
