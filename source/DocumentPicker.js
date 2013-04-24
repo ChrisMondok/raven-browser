@@ -5,8 +5,7 @@ enyo.kind({
 	published:{
 		tenantId:null,
 		documents:null,
-		api:null,
-		disabled:false
+		api:null
 	},
 	events:{
 		onErrorReceived:"",
@@ -25,25 +24,12 @@ enyo.kind({
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", classes:"max-width", components:[
 				{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"loadDocuments"},
-				{fit:true},
-				{kind:"onyx.MenuDecorator", components:[
-					{name:"newButton", kind:"onyx.Button", content:"New"},
-					{name:"createPopup", kind:"onyx.ContextualPopup", title:"Create document", floating:true,
-						actionButtons:[
-							{content:"Create", classes:"onyx-affirmative", ontap:"createDocument"}
-						],
-						components:[
-							{kind:"onyx.InputDecorator", components:[
-								{name:"documentIdInput", kind:"onyx.Input", placeholder:"Document Id"}
-							]},
-						]},
-				]}
 			]},
 		]},
 	],
 	create:function() {
 		this.inherited(arguments);
-		this.setDisabled(!this.getTenantId());
+		this.$.reloadButton.setDisabled(!this.getTenantId());
 		this.setDocuments([]);
 	},
 	tenantIdChanged:function(){
@@ -92,12 +78,6 @@ enyo.kind({
 	},
 	selectDocument:function(sender,event) {
 		this.doDocumentSelected({documentId:this.getDocuments()[event.index].__document_id});
-	},
-	disabledChanged:function() {
-		var d = this.getDisabled();
-		var cmps = ["newButton", "reloadButton"];
-		for(var item in cmps)
-			this.$[cmps[item]].setDisabled(d);
 	},
 	createDocument:function(sender,event) {
 		this.$.createPopup.hide();
