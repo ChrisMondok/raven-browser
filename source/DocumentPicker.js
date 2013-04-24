@@ -7,6 +7,7 @@ enyo.kind({
 		documents:null,
 		api:null
 	},
+	entityTypes:null,
 	events:{
 		onErrorReceived:"",
 		onDocumentSelected:"",
@@ -31,6 +32,7 @@ enyo.kind({
 		this.inherited(arguments);
 		this.$.reloadButton.setDisabled(!this.getTenantId());
 		this.setDocuments([]);
+		window.D = this;
 	},
 	tenantIdChanged:function(){
 		var selection = this.$.documentList.getSelection();
@@ -68,12 +70,27 @@ enyo.kind({
 		this.doErrorReceived({error:response.Error});
 	},
 	documentsChanged:function() {
-		this.$.documentList.setCount(this.getDocuments().length);
+		var documents = this.getDocuments();
+		this.entityTypes = [];
+		for(var i in documents)
+		{
+			var eType = documents[i]["@metadata"]["Raven-Entity-Name"];
+			if(eType && this.entityTypes.indexOf(eType) == -1)
+				this.entityTypes.push(eType)
+		}
+		this.entityTypes.sort();
+		this.$.documentList.setCount(documents.length);
 		this.$.documentList.refresh();
 	},
 	renderDocument:function(sender,event) {
-		this.$.documentId.setContent(this.getDocuments()[event.index].__document_id);
+		var doc = this.getDocuments()[event.index];
+		this.$.documentId.setContent(doc.__document_id);
 		this.$.item.addRemoveClass("selected",sender.isSelected(event.index));
+		var eType = doc["@metadata"]["Raven-Entity-Name"];
+		if(eType)
+			this.$.item.applyStyle("border-left","0.5ex solid hsl("+360*this.entityTypes.indexOf(eType)/this.entityTypes.length+",100%,50%)");
+		else
+			this.$.item.applyStyle("border-left","0.5ex solid #888");
 		return true;
 	},
 	selectDocument:function(sender,event) {
