@@ -18,8 +18,14 @@ enyo.kind({
 	},
 	components:[
 		{kind:"onyx.Toolbar", components:[
-			{kind:"onyx.InputDecorator", style:"width:100%", components:[
-				{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
+			{kind:"FittableColumns", style:"width:100%", components:[
+				{kind:"onyx.InputDecorator", fit:true, components:[
+					{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
+				]},
+				{kind:"Group", classes:"toolbar-button-group", components:[
+					{kind:"onyx.Button", active:true, style:"margin:0", content:"Data"},
+					{kind:"onyx.Button", style:"margin:0", content:"Metadata"}
+				]},
 			]},
 		]},
 		{name:"documentBodyInput", kind:"onyx.TextArea", fit:true, style:"width:100%; resize:none"},
