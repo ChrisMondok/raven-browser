@@ -130,7 +130,6 @@ enyo.kind({
 	},
 	tabButtonTapped:function(sender,event) {
 		var index = [this.$.dataTabButton,this.$.metaTabButton].indexOf(event.originator);
-		debugger;
-		this.$.tabPanel.setIndex();
+		this.$.tabPanel.setIndex(index);
 	}
 });
