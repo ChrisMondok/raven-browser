@@ -18,11 +18,8 @@ enyo.kind({
 			]},
 		]},
 		{kind:"onyx.Toolbar", components:[
-			{kind:"FittableColumns", classes:"max-width", components:[
-				{kind:"onyx.Button", content:"Reload", ontap:"loadTenants"},
-				{fit:true},
-				{kind:"onyx.Button", content:"Settings", ontap:"doShowSettings"}
-			]},
+			{kind:"onyx.Button", content:"Reload", ontap:"loadTenants"},
+			{kind:"onyx.Button", content:"Settings", ontap:"doShowSettings"}
 		]},
 	],
 	apiChanged:function() {

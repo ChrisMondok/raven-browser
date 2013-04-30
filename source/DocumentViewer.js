@@ -22,13 +22,16 @@ enyo.kind({
 				{kind:"onyx.InputDecorator", fit:true, components:[
 					{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
 				]},
-				{kind:"Group", classes:"toolbar-button-group", components:[
-					{kind:"onyx.Button", active:true, style:"margin:0", content:"Data"},
-					{kind:"onyx.Button", style:"margin:0", content:"Metadata"}
+				{kind:"Group", classes:"toolbar-button-group", ontap:"tabButtonTapped", components:[
+					{name:"dataTabButton", kind:"onyx.Button", active:true, style:"margin:0", content:"Data"},
+					{name:"metaTabButton", kind:"onyx.Button", style:"margin:0", content:"Metadata"}
 				]},
 			]},
 		]},
-		{name:"documentBodyInput", kind:"onyx.TextArea", fit:true, style:"width:100%; resize:none"},
+		{name:"tabPanel", kind:"Panels", draggable:false, fit:true, components:[
+			{name:"documentBodyInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
+			{name:"metadataInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
+		]},
 		{name:"savedMessageDrawer", classes:"footer-drawer", open:false, kind:"Drawer", components:[
 			{name:"savedMessage", content:"Document saved", classes:"nice-padding"}
 		]},
@@ -125,4 +128,9 @@ enyo.kind({
 	documentDeleteFailed:function(sender,event) {
 		this.doErrorReceived({error:"Failed to delete document."});
 	},
+	tabButtonTapped:function(sender,event) {
+		var index = [this.$.dataTabButton,this.$.metaTabButton].indexOf(event.originator);
+		debugger;
+		this.$.tabPanel.setIndex();
+	}
 });

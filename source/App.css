@@ -64,7 +64,7 @@
 
 .onyx-item.selected
 {
-	background-color:#35A8EE;
+	background-color:#AAA;
 }
 
 .onyx-dark .onyx-item.selected
@@ -108,8 +108,8 @@ textarea
 
 .divider
 {
-	background-color:#333;
 	color:white;
+	text-indent:1em;
 }
 
 .onyx-toolbar .enyo-fittable-columns-layout > *
@@ -140,4 +140,14 @@ textarea
 {
 	border-radius:0px 3px 3px 0px;
 	border-right-width:1px;
+}
+
+.onyx-toolbar .onyx-popup-decorator
+{
+	height:36px;
+}
+
+.onyx-toolbar .onyx-popup-decorator .onyx-button
+{
+	padding:6px 18px;
 }
