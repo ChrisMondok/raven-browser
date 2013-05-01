@@ -9,5 +9,6 @@ enyo.depends(
 	"DocumentViewer.js",
 	"TenantPicker.js",
 	"Settings.js",
+	"Toast.js",
 	"RavenAPI.js"
 );

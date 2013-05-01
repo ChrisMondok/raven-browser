@@ -32,9 +32,6 @@ enyo.kind({
 			{name:"documentBodyInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
 			{name:"metadataInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
 		]},
-		{name:"savedMessageDrawer", classes:"footer-drawer", open:false, kind:"Drawer", components:[
-			{name:"savedMessage", content:"Document saved", classes:"nice-padding"}
-		]},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", style:"width:100%", components:[
 				{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument", disabled:true},
@@ -108,11 +105,10 @@ enyo.kind({
 		this.setDocumentId(sender.getValue());
 	},
 	showSavedMessage:function(sender,event) {
-		this.$.savedMessage.setContent(event.Key+" saved.");
-		this.$.savedMessageDrawer.setOpen(true);
-		enyo.job("hideSavedMessage", enyo.bind(this, function() {
-				this.$.savedMessageDrawer.setOpen(false);
-			}),2500);
+		enyo.create({
+			kind:"onyx.Toast",
+			content:event.Key+" saved."
+		});
 	},
 	closeDeletePopup:function() {
 		this.$.deletePopup.hide();

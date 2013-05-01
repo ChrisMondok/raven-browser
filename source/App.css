@@ -151,3 +151,7 @@ textarea
 {
 	padding:6px 18px;
 }
+
+.onyx-toast {
+	border-radius:0;
+}
