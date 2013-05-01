@@ -19,7 +19,7 @@ enyo.kind({
 	},
 	components:[
 		{name:"mainPanel", kind:"enyo.Panels", arrangerKind:"CardSlideInArranger", draggable:false, style:"width:100%", fit:true, components:[
-			{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
+			{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
 				{name:"tenantPicker", kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
 				{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
 				{kind:"RavenBrowser.DocumentViewer", classes:"panel"}
