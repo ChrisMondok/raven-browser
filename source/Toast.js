@@ -5,7 +5,7 @@ enyo.kind({
 	floating:true,
 	centered:true,
 	published:{
-		lifetime:20000,
+		lifetime:2000,
 	},
 	handlers:{
 		ontap:"hide",
