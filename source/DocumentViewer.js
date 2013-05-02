@@ -114,13 +114,16 @@ enyo.kind({
 		this.$.deletePopup.hide();
 	},
 	deleteDocument:function(sender,event) {
-		debugger;
 		this.closeDeletePopup();
 		this.getApi().deleteDocument(this.getTenantId(), this.getDocumentId(), enyo.bind(this,"documentDeleted"), enyo.bind(this,"documentDeleteFailed"));
 	},
 	documentDeleted:function(sender,event) {
 		this.setDocumentId(null);
 		this.$.documentBodyInput.setValue("");
+		enyo.create({
+			kind:"onyx.Toast",
+			content:"Document deleted."
+		});
 	},
 	documentDeleteFailed:function(sender,event) {
 		this.doErrorReceived({error:"Failed to delete document."});
