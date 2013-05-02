@@ -114,6 +114,7 @@ enyo.kind({
 		this.$.deletePopup.hide();
 	},
 	deleteDocument:function(sender,event) {
+		debugger;
 		this.closeDeletePopup();
 		this.getApi().deleteDocument(this.getTenantId(), this.getDocumentId(), enyo.bind(this,"documentDeleted"), enyo.bind(this,"documentDeleteFailed"));
 	},
