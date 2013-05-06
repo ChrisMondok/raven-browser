@@ -78,8 +78,6 @@
 	max-width:480px;
 	margin:0 auto;
 	padding:1em;
-	background-color:#EAEAEA;
-	box-shadow:0px 0px 8px rgba(0,0,0,0.75);
 }
 
 .max-width
@@ -108,38 +106,13 @@ textarea
 
 .divider
 {
-	color:white;
+	color:black;
 	text-indent:1em;
 }
 
 .onyx-toolbar .enyo-fittable-columns-layout > *
 {
 	vertical-align:middle;
-}
-
-.toolbar-button-group
-{
-	margin:0px 6px;
-	vertical-align:middle;
-}
-
-.toolbar-button-group .onyx-button
-{
-	border-radius:0;
-	border-width:1px 0px;
-	vertical-align:middle;
-}
-
-.toolbar-button-group .onyx-button:first-of-type
-{
-	border-radius:3px 0px 0px 3px;
-	border-left-width:1px;
-}
-
-.toolbar-button-group .onyx-button:last-of-type
-{
-	border-radius:0px 3px 3px 0px;
-	border-right-width:1px;
 }
 
 .onyx-toolbar .onyx-popup-decorator
@@ -154,4 +127,10 @@ textarea
 
 .onyx-toast {
 	border-radius:0;
+}
+
+.onyx-popup h1
+{
+	font-size:1.15em;
+	font-weight:bold;
 }
