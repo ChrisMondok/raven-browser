@@ -4,7 +4,7 @@ enyo.kind({
 	published:{
 		ravenHost: "mds-d77gds1",
 		ravenPort: 8080,
-		timeout:3000
+		timeout:30000
 	},
 	events:{
 		onConnectionChanged:"",
@@ -30,26 +30,35 @@ enyo.kind({
 	},
 	loadDocument:function(tenantId, documentId, callback, errorCallback) {
 		var ajax = new enyo.Ajax({
-			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId
+			url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName",
 		});
-		ajax.go();
-		ajax.response(callback);
-		if(errorCallback)
-			ajax.error(errorCallback);
+		ajax.go({query:"__document_id:"+documentId});
+		ajax.response(function(ajax,response) {
+			if(response.Results.length != 1)
+				return errorCallback({error:"Got "+response.Results.length+" results."});
+			callback(ajax,response.Results[0]);	
+		});
+		ajax.error(errorCallback);
 	},
 	saveDocument:function(tenantId, documentId, value, callback, errorCallback) {
+		if(value.hasOwnProperty('@metadata') && value['@metadata']['Raven-Entity-Name'])
+			headers = {'Raven-Entity-Name':value['@metadata']['Raven-Entity-Name']};
+		else
+			headers = {};
+
 		var ajax = new enyo.Ajax({
 			method:"PUT",
 			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
 			contentType:"application/json",
 			cacheBust:false,
-			postBody:value
+			postBody:value,
+			headers:headers
 		});
+
 		ajax.go();
-		if(callback)
-			ajax.response(callback);
-		if(errorCallback)
-			ajax.error(errorCallback);
+
+		ajax.response(callback);
+		ajax.error(errorCallback);
 	},
 	createDocument:function(tenantId, documentId, callback, errorCallback) {
 		var ajax = new enyo.Ajax({
@@ -59,11 +68,11 @@ enyo.kind({
 			cacheBust:false,
 			postBody:{data:"goes here"}
 		});
+
 		ajax.go();
-		if(callback)
-			ajax.response(callback);
-		if(errorCallback)
-			ajax.error(errorCallback);
+
+		ajax.response(callback);
+		ajax.error(errorCallback);
 	},
 	deleteDocument:function(tenantId, documentId, callback, errorCallback) {
 		var ajax = new enyo.Ajax({
@@ -72,10 +81,9 @@ enyo.kind({
 			cacheBust:false,
 		});
 		ajax.go();
-		if(callback)
-			ajax.response(callback);
-		if(errorCallback)
-			ajax.error(errorCallback);
+
+		ajax.response(callback);
+		ajax.error(errorCallback);
 	},
 	loadInMultipleRequests:function(url,params,callback,progressCallback,errorCallback) {
 		var loader = {
@@ -108,7 +116,8 @@ enyo.kind({
 					});
 			}),
 			abort:function() {
-				alert("ABORT");
+				if(this.ajax)
+					this.ajax.fail();
 			}
 		};
 

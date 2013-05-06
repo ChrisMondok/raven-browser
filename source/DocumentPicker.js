@@ -43,6 +43,7 @@ enyo.kind({
 		onErrorReceived:"",
 		onDocumentSelected:"",
 	},
+	loader:null,
 	components:[
 		{name:"documentList", onSelect:"selectDocument", kind:"List", fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", content:"Divider"},
@@ -92,10 +93,13 @@ enyo.kind({
 	loadDocuments:function() {
 		enyo.job.stop("closeLoadingDrawer");
 		this.setDocuments([]);
+		if(this.loader)
+			this.loader.abort();
 
-		this.getApi().getDocuments(this.getTenantId(),
+		this.loader = this.getApi().getDocuments(this.getTenantId(),
 			enyo.bind(this, function(documentIds) {
 				this.setDocuments(documentIds);
+				this.loader = null;
 			}),
 			enyo.bind(this, function(progress) {
 				this.$.loadingBar.animateProgressTo(progress.loaded * 100 / progress.total);

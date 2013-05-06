@@ -14,17 +14,18 @@ enyo.kind({
 		onDocumentSelected:"selectDocument",
 		onErrorReceived:"showError",
 		onShowSettings:"showSettings",
-		onHideSettings:"hideSettings",
 		onConnectionChanged:"connectionChanged"
 	},
 	components:[
-		{name:"mainPanel", kind:"enyo.Panels", arrangerKind:"CardSlideInArranger", draggable:false, style:"width:100%", fit:true, components:[
-			{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
-				{name:"tenantPicker", kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
-				{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
-				{kind:"RavenBrowser.DocumentViewer", classes:"panel"}
-			]},
-			{kind:"RavenBrowser.Settings"},
+		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
+			{name:"tenantPicker", kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
+			{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
+			{kind:"RavenBrowser.DocumentViewer", classes:"panel"},
+		]},
+		{name:"settingsPopup", classes:"max-width-column onyx-light", style:"width:320px", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
+			{name:"settings", kind:"RavenBrowser.Settings"},
+			{tag:'br'},
+			{kind:"onyx.Button", classes:"max-width onyx-dark", content:"Close", ontap:"hideSettings"},
 		]},
 		{name:"infoPopup", ontap:"hideInfoPopup", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
 			{name:"infoPopupContent", content:"Info popup"},
@@ -60,10 +61,10 @@ enyo.kind({
 		this.$.infoPopup.hide();
 	},
 	showSettings:function(event) {
-		this.$.mainPanel.setIndex(1);
+		this.$.settingsPopup.show();
 	},
 	hideSettings:function(sender,event) {
-		this.$.mainPanel.setIndex(0);
+		this.$.settingsPopup.hide();
 	},
 	connectionChanged:function(sender,event) {
 		this.$.tenantPicker.loadTenants();

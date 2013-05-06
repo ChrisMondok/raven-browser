@@ -22,13 +22,13 @@ enyo.kind({
 				{kind:"onyx.InputDecorator", fit:true, components:[
 					{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
 				]},
-				{kind:"Group", classes:"toolbar-button-group", ontap:"tabButtonTapped", components:[
-					{name:"dataTabButton", kind:"onyx.Button", active:true, style:"margin:0", content:"Data"},
-					{name:"metaTabButton", kind:"onyx.Button", style:"margin:0", content:"Metadata"}
+				{kind:"onyx.RadioGroup", onActiveChanged: 'ac', components:[
+					{name:"dataTabButton", ontap:'tabButtonTapped', active:true, style:"margin:0", content:"Data"},
+					{name:"metaTabButton", ontap:'tabButtonTapped', style:"margin:0", content:"Metadata"}
 				]},
 			]},
 		]},
-		{name:"tabPanel", kind:"Panels", draggable:false, fit:true, components:[
+		{name:"tabPanel", kind:"Panels", arrangerKind:"CardSlideInArranger", draggable:false, fit:true, components:[
 			{name:"documentBodyInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
 			{name:"metadataInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
 		]},
@@ -51,11 +51,20 @@ enyo.kind({
 			]},
 		]},
 	],
+	ac:function() {
+		debugger
+	},
 	loadDocument:function() {
 		this.getApi().loadDocument(this.getTenantId(),this.getDocumentId(),enyo.bind(this,"gotResponse"), enyo.bind(this,"gotError"));
 	},
 	gotResponse:function(sender,response) {
-		this.$.documentBodyInput.setValue(JSON.stringify(response,undefined,2));
+		var data = {};
+		for(var key in response)
+			if(response.hasOwnProperty(key) && key != "@metadata")
+				data[key] = response[key];
+
+		this.$.documentBodyInput.setValue(JSON.stringify(data,undefined,2));
+		this.$.metadataInput.setValue(JSON.stringify(response["@metadata"],undefined,2));
 		this.$.deleteButton.setDisabled(false);
 	},
 	gotError:function(sender,error) {
@@ -80,9 +89,12 @@ enyo.kind({
 	saveDocument:function(sender,event) {
 		var input = this.$.documentBodyInput;
 		var value = input.getValue();
+		var joined;
 		try
 		{
 			input.setValue(JSON.stringify(JSON.parse(value),undefined,2));
+			joined = JSON.parse(value);
+			joined["@metadata"] = JSON.parse(this.$.metadataInput.getValue());
 		}
 		catch(e)
 		{
@@ -90,7 +102,7 @@ enyo.kind({
 			return;
 		}
 
-		this.getApi().saveDocument(this.getTenantId(), this.getDocumentId(), value,
+		this.getApi().saveDocument(this.getTenantId(), this.getDocumentId(), joined,
 			enyo.bind(this,"documentSaved"),
 			enyo.bind(this,"documentSaveFailed"));
 	},
