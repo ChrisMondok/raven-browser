@@ -6,10 +6,6 @@
 	padding: 15px;
 }
 
-.nice-margin {
-	margin:15px;
-}
-
 .onyx .onyx-item
 {
 	border-top:1px solid rgba(255,255,255,0.5);
@@ -89,11 +85,6 @@
 	width:100%;	
 }
 
-.max-height
-{
-	height:100%;
-}
-
 .not-so-large
 {
 	font-size:1em;
@@ -111,7 +102,6 @@ textarea
 	outline:none;
 	color:black;
 	background-color:white;
-	resize:none;
 }
 
 .divider
@@ -143,4 +133,13 @@ textarea
 {
 	font-size:1.15em;
 	font-weight:bold;
+}
+
+.onyx-toolbar .onyx-tabbutton
+{
+	height:36px;
+	line-height:auto;
+	padding:0 1em;
+	margin: 0;
+	font-size:1em;
 }

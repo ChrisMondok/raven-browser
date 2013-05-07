@@ -22,9 +22,9 @@ enyo.kind({
 				{kind:"onyx.InputDecorator", fit:true, components:[
 					{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
 				]},
-				{kind:"onyx.RadioGroup", onActiveChanged: 'ac', components:[
-					{name:"dataTabButton", ontap:'tabButtonTapped', active:true, style:"margin:0", content:"Data"},
-					{name:"metaTabButton", ontap:'tabButtonTapped', style:"margin:0", content:"Metadata"}
+				{kind:"onyx.RadioGroup", onActivate: 'tabChanged', controlClasses:"onyx-tabbutton", components:[
+					{name:"dataTabButton", active:true, content:"Data"},
+					{name:"metaTabButton", content:"Meta"}
 				]},
 			]},
 		]},
@@ -62,9 +62,6 @@ enyo.kind({
 			]},
 		]},
 	],
-	ac:function() {
-		debugger
-	},
 	loadDocument:function() {
 		this.getApi().loadDocument(this.getTenantId(),this.getDocumentId(),enyo.bind(this,"gotResponse"), enyo.bind(this,"gotError"));
 	},
@@ -159,8 +156,8 @@ enyo.kind({
 	documentDeleteFailed:function(sender,event) {
 		this.doErrorReceived({error:"Failed to delete document."});
 	},
-	tabButtonTapped:function(sender,event) {
-		var index = [this.$.dataTabButton,this.$.metaTabButton].indexOf(event.originator);
-		this.$.tabPanel.setIndex(index);
+	tabChanged:function(sender,event) {
+		if(event.originator.getActive())
+			this.$.tabPanel.setIndex(sender.controls.indexOf(event.originator));
 	}
 });
