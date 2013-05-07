@@ -29,8 +29,19 @@ enyo.kind({
 			]},
 		]},
 		{name:"tabPanel", kind:"Panels", arrangerKind:"CardSlideInArranger", draggable:false, fit:true, components:[
-			{name:"documentBodyInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
-			{name:"metadataInput", kind:"onyx.TextArea", style:"width:100%; resize:none"},
+			{name:"documentBodyInput", kind:"onyx.TextArea"},
+			{kind:"Scroller", controlClasses:'nice-margin', components:[
+				{kind:"onyx.Groupbox", components:[
+					{kind:"onyx.GroupboxHeader", content:"Raven Entity Name"},
+					{kind:"onyx.InputDecorator", style:"display:block", components:[
+						{name:"entityNameInput", kind:"onyx.Input", placeholder:"Raven-Entity-Name"},
+					]},
+				]},
+				{kind:"onyx.Groupbox", components:[
+					{kind:"onyx.GroupboxHeader", content:"Metadata"},
+					{name:"metadataDisplay", tag:"pre", style:"margin:0"},
+				]},
+			]},
 		]},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", style:"width:100%", components:[
@@ -64,7 +75,10 @@ enyo.kind({
 				data[key] = response[key];
 
 		this.$.documentBodyInput.setValue(JSON.stringify(data,undefined,2));
-		this.$.metadataInput.setValue(JSON.stringify(response["@metadata"],undefined,2));
+		this.$.metadataDisplay.setContent(JSON.stringify(response["@metadata"],undefined,2));
+		var eName = response["@metadata"]["Raven-Entity-Name"];
+		this.$.entityNameInput.setValue(eName || "");
+		//this.$.metadataInput.setValue(JSON.stringify(response["@metadata"],undefined,2));
 		this.$.deleteButton.setDisabled(false);
 	},
 	gotError:function(sender,error) {
@@ -94,7 +108,7 @@ enyo.kind({
 		{
 			input.setValue(JSON.stringify(JSON.parse(value),undefined,2));
 			joined = JSON.parse(value);
-			joined["@metadata"] = JSON.parse(this.$.metadataInput.getValue());
+			//joined["@metadata"] = JSON.parse(this.$.metadataInput.getValue());
 		}
 		catch(e)
 		{
@@ -102,12 +116,17 @@ enyo.kind({
 			return;
 		}
 
+		var eName = this.$.entityNameInput.getValue()
+			if(eName)
+				joined["@metadata"] = {"Raven-Entity-Name": eName};
+
 		this.getApi().saveDocument(this.getTenantId(), this.getDocumentId(), joined,
 			enyo.bind(this,"documentSaved"),
 			enyo.bind(this,"documentSaveFailed"));
 	},
 	documentSaved:function(sender,response) {
 		this.setDocumentId(response.Key);
+		this.loadDocument();
 		this.doDocumentSaved(response);
 	},
 	documentSaveFailed:function(sender,error) {
