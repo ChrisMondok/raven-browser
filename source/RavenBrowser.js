@@ -37,6 +37,7 @@ enyo.kind({
 		var port = localStorage.getItem("raven-port") || 8080;
 		var sortFunction = localStorage.getItem("sort-function") || "Entity Type";
 		this.$.settings.setSortFunction(sortFunction);
+		this.$.documentPicker.setSortFunction(sortFunction);
 		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port}));
 	},
 	selectTenant:function(sender,event) {

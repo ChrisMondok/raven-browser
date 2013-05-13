@@ -69,6 +69,7 @@ enyo.kind({
 		this.$.reloadButton.setDisabled(!this.getTenantId());
 		this.setDocuments([]);
 		this.setSortFunction(sortFunctions["Entity Type"]);
+		window.DP = this;
 	},
 	tenantIdChanged:function(){
 		var selection = this.$.documentList.getSelection();
@@ -176,9 +177,8 @@ enyo.kind({
 		var docs = this.getDocuments();
 		var doc = docs[event.index];
 
-
 		switch (this.getSortFunction()) {
-			case sortFunctions.entityType:
+			case sortFunctions["Entity Type"]:
 				var eType = doc["@metadata"]["Raven-Entity-Name"];
 				this.$.divider.setContent(eType || "Untyped");
 				this.$.divider.setShowing(!docs[event.index-1] || doc["@metadata"]["Raven-Entity-Name"] != docs[event.index-1]["@metadata"]["Raven-Entity-Name"]);
@@ -195,7 +195,7 @@ enyo.kind({
 					this.$.divider.applyStyle("background-image","none");
 				}
 				break;
-			case sortFunctions.documentId:
+			case sortFunctions["Document ID"]:
 				this.$.divider.setContent(doc.__document_id.charAt(0).toUpperCase());
 				this.$.divider.setShowing(!docs[event.index-1] || doc.__document_id.charAt(0) != docs[event.index-1].__document_id.charAt(0));
 				this.$.item.applyStyle("border-left","none");
