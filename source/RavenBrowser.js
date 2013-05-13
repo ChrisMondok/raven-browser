@@ -14,7 +14,8 @@ enyo.kind({
 		onDocumentSelected:"selectDocument",
 		onErrorReceived:"showError",
 		onShowSettings:"showSettings",
-		onConnectionChanged:"connectionChanged"
+		onConnectionChanged:"connectionChanged",
+		onSortFunctionChanged:"setSortFunction"
 	},
 	components:[
 		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
@@ -24,7 +25,6 @@ enyo.kind({
 		]},
 		{name:"settingsPopup", classes:"max-width-column onyx-light", style:"width:320px", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
 			{name:"settings", kind:"RavenBrowser.Settings"},
-			{tag:'br'},
 			{kind:"onyx.Button", classes:"max-width onyx-dark", content:"Close", ontap:"hideSettings"},
 		]},
 		{name:"infoPopup", ontap:"hideInfoPopup", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
@@ -35,6 +35,8 @@ enyo.kind({
 		this.inherited(arguments);
 		var host = localStorage.getItem("raven-host") || "localhost";
 		var port = localStorage.getItem("raven-port") || 8080;
+		var sortFunction = localStorage.getItem("sort-function") || "Entity Type";
+		this.$.settings.setSortFunction(sortFunction);
 		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port}));
 	},
 	selectTenant:function(sender,event) {
@@ -79,6 +81,9 @@ enyo.kind({
 		this.$.documentPicker.setApi(this.getApi());
 		this.$.documentViewer.setApi(this.getApi());
 		this.$.settings.setApi(this.getApi());
+	},
+	setSortFunction:function(sender,event) {
+		this.$.documentPicker.setSortFunction(event.sortFunction);
 	}
 });
 

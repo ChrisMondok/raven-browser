@@ -1,5 +1,5 @@
 var sortFunctions = {
-	entityType: function(a,b) {
+	"Entity Type": function(a,b) {
 			var aType = a["@metadata"]["Raven-Entity-Name"];
 			var bType = b["@metadata"]["Raven-Entity-Name"];
 			if(aType && bType) {
@@ -17,7 +17,7 @@ var sortFunctions = {
 			}
 			return 0;
 		},
-	documentId: function(a,b) {
+	"Document ID": function(a,b) {
 		if(a.__document_id < b.__document_id)
 			return -1
 		else
@@ -25,7 +25,7 @@ var sortFunctions = {
 				return 1
 		return 0
 	},
-	unsorted:null
+	"unsorted":null
 }
 
 enyo.kind({
@@ -58,24 +58,17 @@ enyo.kind({
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", classes:"max-width", components:[
 				{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"loadDocuments"},
-				{kind:"onyx.PickerDecorator", components:[
-					{content:"Entity Type", style:"width:8em"},
-					{kind:"onyx.Picker", onSelect:"pickSortFunction", components:[
-						{content:"Entity Type", value:"entityType"},
-						{content:"Document ID", value:"documentId"},
-						{content:"Unsorted", value:"unsorted"}
-					]},
-				]},
 			]},
 		]},
 	],
+	statics:{
+		sortFunctions:sortFunctions
+	},
 	create:function() {
 		this.inherited(arguments);
 		this.$.reloadButton.setDisabled(!this.getTenantId());
 		this.setDocuments([]);
-		this.setSortFunction(sortFunctions.entityType);
-
-		window.DP = this;
+		this.setSortFunction(sortFunctions["Entity Type"]);
 	},
 	tenantIdChanged:function(){
 		var selection = this.$.documentList.getSelection();
@@ -86,9 +79,6 @@ enyo.kind({
 		if(tenantId)
 			this.loadDocuments();
 		this.$.reloadButton.setDisabled(!tenantId);
-	},
-	pickSortFunction:function(sender,event) {
-		this.setSortFunction(sortFunctions[event.selected.value]);
 	},
 	loadDocuments:function() {
 		enyo.job.stop("closeLoadingDrawer");
@@ -109,6 +99,10 @@ enyo.kind({
 					enyo.job("closeLoadingDrawer", enyo.bind(this, function() {
 							this.$.loadingDrawer.setOpen(false);
 						}),1000);
+			}),
+			enyo.bind(this,function(sender,response) {
+				if(response == "404")
+					this.gotError(JSON.parse(sender.xhrResponse.body));
 			}));
 
 		this.$.loadingBar.setProgress(0);
@@ -143,6 +137,14 @@ enyo.kind({
 		this.entityTypes.sort();
 		this.$.documentList.setCount(documents?documents.length:0);
 		this.$.documentList.refresh();
+	},
+	setSortFunction:function(functionName) {
+		var oldValue = this.sortFunction;
+		var newValue = RavenBrowser.DocumentPicker.sortFunctions[functionName];
+		if(newValue != oldValue) {
+			this.sortFunction = newValue;
+			this.sortFunctionChanged(oldValue,newValue);
+		}
 	},
 	sortFunctionChanged:function(oldValue,newValue) {
 		this.sortDocuments();
@@ -203,9 +205,5 @@ enyo.kind({
 	},
 	selectDocument:function(sender,event) {
 		this.doDocumentSelected({documentId:this.getDocuments()[event.index].__document_id});
-	},
-	createDocument:function(sender,event) {
-		this.$.createPopup.hide();
-		this.getApi().createDocument(this.getTenantId(),this.$.documentIdInput.getValue());
 	}
 });
