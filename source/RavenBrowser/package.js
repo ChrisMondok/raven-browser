@@ -1,0 +1,10 @@
+enyo.depends(
+	"RavenBrowser.css",
+	"RavenBrowser.js",
+	"DocumentPicker.js",
+	"DocumentViewer.js",
+	"TenantPicker.js",
+	"Settings.js",
+	"Toast.js",
+	"RavenAPI.js"
+);
