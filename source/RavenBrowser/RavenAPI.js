@@ -35,8 +35,8 @@ enyo.kind({
 		);
 	},
 	loadDocument:function(tenantId, documentId, callback, errorCallback) {
-		new enyo.Ajax({ url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName" })
-			.go({query:"__document_id:"+documentId})
+		new enyo.Ajax({ url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId })
+			.go()
 			.response(function(ajax,response) {
 				if(response.Results.length != 1)
 					return errorCallback({error:"Got "+response.Results.length+" results."});
