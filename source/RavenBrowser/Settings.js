@@ -8,7 +8,8 @@ enyo.kind({
 	controlClasses:"nice-margin",
 	events:{
 		onServerChanged:"",
-		onSortFunctionChanged:""
+		onSortFunctionChanged:"",
+		onPageSizeChanged:""
 	},
 	components:[
 		{kind:"onyx.Groupbox", components:[
@@ -18,6 +19,14 @@ enyo.kind({
 			]},
 			{kind:"onyx.InputDecorator", components:[
 				{name:"ravenPortInput", kind:"onyx.Input", classes:"max-width", placeholder:"Port", onchange:"setRavenPort"},
+			]},
+			{style:"padding:0.5em 0em;", components:[
+				{name:"pageSizeLabel", style:"padding:0em 0.5em;"},
+				{name:"pageSizeSlider", kind:"onyx.Slider", min:1, max:1024, increment:1, value:1024, onChange:"setPageSize"},
+				{style:"padding:0em 0.5em", components:[
+					{content:"1", style:"display:inline-block; text-align:left; width:50%"},
+					{content:"1024", style:"display:inline-block; text-align:right; width:50%"},
+				]},
 			]},
 		]},
 		{kind:"onyx.Groupbox", components:[
@@ -42,6 +51,8 @@ enyo.kind({
 	apiChanged:function() {
 		this.$.ravenHostInput.setValue(this.getApi().getRavenHost());
 		this.$.ravenPortInput.setValue(this.getApi().getRavenPort());
+		this.$.pageSizeSlider.setValue(this.getApi().getPageSize());
+		this.updatePageSizeLabel();
 	},
 	setRavenHost:function(sender,event) {
 		this.getApi().setRavenHost(sender.getValue());
@@ -54,10 +65,12 @@ enyo.kind({
 	},
 	sortFunctionChanged:function() {
 		this.doSortFunctionChanged({sortFunction:this.getSortFunction()});
-
-//		var options = this.$.sortPicker.components;
-//		for(var i = 0; i < options.length; i++)
-//			if(options[i].content == this.getSortFunction())
-//				this.$.sortPicker.setSelected(options[i]);
-	}
+	},
+	setPageSize:function(sender,event) {
+		this.doPageSizeChanged({pageSize:sender.getValue()});
+		this.updatePageSizeLabel();
+	},
+	updatePageSizeLabel:function() {
+		this.$.pageSizeLabel.setContent("Page Size: "+this.$.pageSizeSlider.getValue());
+	},
 });

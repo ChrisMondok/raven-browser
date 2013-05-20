@@ -166,3 +166,7 @@ textarea {
 	background-image:none;
 	background-color:transparent;
 }
+
+.onyx-popup.onyx-light {
+	color:black;
+}

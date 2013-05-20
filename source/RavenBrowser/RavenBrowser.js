@@ -15,7 +15,8 @@ enyo.kind({
 		onErrorReceived:"showError",
 		onShowSettings:"showSettings",
 		onConnectionChanged:"connectionChanged",
-		onSortFunctionChanged:"setSortFunction"
+		onSortFunctionChanged:"setSortFunction",
+		onPageSizeChanged:"setPageSize"
 	},
 	components:[
 		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
@@ -33,12 +34,16 @@ enyo.kind({
 	],
 	create:function() {
 		this.inherited(arguments);
+
 		var host = localStorage.getItem("raven-host") || "localhost";
 		var port = localStorage.getItem("raven-port") || 8080;
 		var sortFunction = localStorage.getItem("sort-function") || "Entity Type";
+		var pageSize = localStorage.getItem('page-size') || 1024;
+
 		this.$.settings.setSortFunction(sortFunction);
 		this.$.documentPicker.setSortFunction(sortFunction);
-		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port}));
+
+		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port, pageSize:pageSize}));
 	},
 	selectTenant:function(sender,event) {
 		var tenant = event.tenant;
@@ -75,7 +80,6 @@ enyo.kind({
 		this.doTenantSelected({tenant:null});
 
 		localStorage.setItem("raven-host",this.getApi().getRavenHost());
-		localStorage.getItem("raven-port",this.getApi().getRavenPort());
 	},
 	apiChanged:function() {
 		this.$.tenantPicker.setApi(this.getApi());
@@ -85,6 +89,11 @@ enyo.kind({
 	},
 	setSortFunction:function(sender,event) {
 		this.$.documentPicker.setSortFunction(event.sortFunction);
+		localStorage.setItem('sort-function', event.sortFunction);
+	},
+	setPageSize:function(sender,event) {
+		this.getApi().setPageSize(event.pageSize);
+		localStorage.setItem('page-size',event.pageSize);
 	}
 });
 
