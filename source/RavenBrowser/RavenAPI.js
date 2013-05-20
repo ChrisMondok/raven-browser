@@ -18,6 +18,12 @@ enyo.kind({
 			})
 			.error(errorCallback);
 	},
+	ensureStartup:function(tenantId, callback, errorCallback) {
+		return new enyo.Ajax({url:this.getRavenUrl()+"databases/"+tenantId+"/silverlight/ensureStartup"})
+			.go()
+			.response(callback)
+			.error(errorCallback);
+	},
 	getDocuments:function(tenantId, callback, progressCallback, errorCallback) {
 		return this.loadInMultipleRequests(
 			this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName",
