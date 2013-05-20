@@ -102,8 +102,21 @@ enyo.kind({
 						}),1000);
 			}),
 			enyo.bind(this,function(sender,response) {
-				if(response == "404")
-					this.gotError(JSON.parse(sender.xhrResponse.body));
+				switch (response)
+				{
+				case 404:
+					enyo.create({
+						kind:"onyx.Toast",
+						content:"Creating index."
+					});
+					this.getApi().ensureStartup(this.getTenantId(),enyo.bind(this,this.loadDocuments));
+					break;
+				case 0:
+					break;
+				default:
+					if(sender.xhrResponse)
+						this.gotError(JSON.parse(sender.xhrResponse.body));
+				}
 			}));
 
 		this.$.loadingBar.setProgress(0);

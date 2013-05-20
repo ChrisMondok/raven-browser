@@ -4,7 +4,8 @@ enyo.kind({
 	published:{
 		ravenHost: "mds-d77gds1",
 		ravenPort: 8080,
-		timeout: 30000
+		timeout: 30000,
+		pageSize: 1024
 	},
 	events:{
 		onConnectionChanged:"",
@@ -71,7 +72,7 @@ enyo.kind({
 			results:[],
 			loadNextBatch:enyo.bind(this,function() {
 				loader.ajax = new enyo.Ajax({url:url});
-				loader.ajax.go(enyo.mixin({start:loader.results.length, pageSize:1024},params));
+				loader.ajax.go(enyo.mixin({start:loader.results.length, pageSize:this.getPageSize()},params));
 
 				loader.ajax.response(this,function(sender,response){
 						for(var i = 0; i < response.Results.length; i++)
@@ -97,7 +98,7 @@ enyo.kind({
 			}),
 			abort:function() {
 				if(this.ajax)
-					this.ajax.fail();
+					this.ajax.fail(0);
 			}
 		};
 
