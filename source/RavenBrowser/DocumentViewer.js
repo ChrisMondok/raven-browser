@@ -17,47 +17,55 @@ enyo.kind({
 		onDocumentSaved:""
 	},
 	components:[
-		{kind:"onyx.Toolbar", components:[
-			{kind:"FittableColumns", style:"width:100%", components:[
-			]},
-		]},
-		{name:"tabPanel", kind:"Panels", arrangerKind:"CardSlideInArranger", draggable:false, fit:true, components:[
-			{name:"documentBodyInput", kind:"onyx.TextArea"},
-			{kind:"Scroller", controlClasses:'nice-margin', components:[
-				{kind:"onyx.Groupbox", components:[
-					{kind:"onyx.GroupboxHeader", content:"Raven Entity Name"},
-					{kind:"onyx.InputDecorator", style:"display:block", components:[
-						{name:"entityNameInput", kind:"onyx.Input", placeholder:"Raven-Entity-Name"},
+		{style:"position:relative; z-index:1", fit:true, components:[
+			{name:"documentBodyInput", style:"height:100%; width:100%", kind:"onyx.TextArea"},
+			{
+				name:"metaSlider",
+				kind:"Slideable",
+				classes:"sliding-overlay",
+				style:"width:64px; position:absolute; height:300; margin-left:auto; margin-right:auto; left:0%; bottom:0%; width:100%",
+				axis:'v',
+				min:0,
+				max:300,
+				value:300,
+				unit:'px',
+				components:[
+					{kind:"Scroller", controlClasses:'nice-margin', style:"height:100%", components:[
+						{kind:"onyx.Groupbox", components:[
+							{kind:"onyx.GroupboxHeader", content:"Raven Entity Name"},
+							{kind:"onyx.InputDecorator", style:"display:block", components:[
+								{name:"entityNameInput", kind:"onyx.Input", placeholder:"Raven-Entity-Name"},
+							]},
+						]},
+						{kind:"onyx.Groupbox", components:[
+							{kind:"onyx.GroupboxHeader", content:"Metadata"},
+							{name:"metadataDisplay", tag:"pre", style:"margin:0"},
+						]},
 					]},
-				]},
-				{kind:"onyx.Groupbox", components:[
-					{kind:"onyx.GroupboxHeader", content:"Metadata"},
-					{name:"metadataDisplay", tag:"pre", style:"margin:0"},
-				]},
-			]},
+				]
+			},
 		]},
-		{kind:"onyx.Toolbar", components:[
-			{kind:"FittableColumns", style:"width:100%", components:[
-				{kind:"onyx.InputDecorator", fit:true, components:[
-					{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
-				]},
-				{kind:"onyx.RadioGroup", onActivate: 'tabChanged', controlClasses:"onyx-tabbutton", components:[
-					{name:"dataTabButton", active:true, content:"Data"},
-					{name:"metaTabButton", content:"Meta"}
-				]},
-				{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument", disabled:true},
-				{kind:"onyx.MenuDecorator", components:[
-					{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
-					{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
-						components:[
-							{content:"This cannot be undone"},
-						],
-						actionButtons:[
-							{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
-							{content:"Delete", classes:"onyx-negative", ontap:"deleteDocument"}
+		{style:"z-index:2; position:relative;", components:[
+			{kind:"onyx.Toolbar", components:[
+				{kind:"FittableColumns", style:"width:100%", components:[
+					{kind:"onyx.InputDecorator", fit:true, components:[
+						{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
 					]},
+					{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument", disabled:true},
+					{name:"metadataButton", kind:"onyx.Button", content:"Metadata", ontap:"showMetadata"},
+					{kind:"onyx.MenuDecorator", components:[
+						{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
+						{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
+							components:[
+								{content:"This cannot be undone"},
+							],
+							actionButtons:[
+								{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
+								{content:"Delete", classes:"onyx-negative", ontap:"deleteDocument"}
+						]},
+					]},
+					{name:"saveButton", kind:"onyx.Button", classes:"onyx-affirmative", content:"Save", ontap:'saveDocument', disabled:true},
 				]},
-				{name:"saveButton", kind:"onyx.Button", classes:"onyx-affirmative", content:"Save", ontap:'saveDocument', disabled:true},
 			]},
 		]},
 	],
@@ -155,8 +163,10 @@ enyo.kind({
 	documentDeleteFailed:function(sender,event) {
 		this.doErrorReceived({error:"Failed to delete document."});
 	},
-	tabChanged:function(sender,event) {
-		if(event.originator.getActive())
-			this.$.tabPanel.setIndex(sender.controls.indexOf(event.originator));
-	}
+	showMetadata:function(sender,event) {
+		if(this.$.metaSlider.getValue())
+			this.$.metaSlider.animateToMin();
+		else
+			this.$.metaSlider.animateToMax();
+	},
 });
