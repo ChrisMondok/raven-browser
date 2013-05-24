@@ -35,6 +35,7 @@ enyo.kind({
 	published:{
 		tenantId:null,
 		documents:null,
+		filteredDocuments:null,
 		api:null,
 		sortFunction:undefined
 	},
@@ -45,6 +46,11 @@ enyo.kind({
 	},
 	loader:null,
 	components:[
+		{kind:"onyx.Toolbar", components:[
+			{kind:"onyx.InputDecorator", style:"display:block", components:[
+				{name:"filterInput", kind:"onyx.Input", onchange:"applyFilter", placeholder:"Filter", type:"search", classes:"max-width"}
+			]},
+		]},
 		{name:"documentList", onSelect:"selectDocument", kind:"List", fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", content:"Divider"},
 			{kind:"onyx.Item", components:[
@@ -138,11 +144,15 @@ enyo.kind({
 	},
 	sortDocuments:function() {
 		var sortFn = this.getSortFunction();
-		var docs = this.getDocuments();
+		var docs = this.getFilteredDocuments();
 		if(sortFn && docs)
 			docs.sort(sortFn);
 	},
 	documentsChanged:function(oldValue,newValue) {
+		this.updateEntityTypes();
+		this.applyFilter();
+	},
+	updateEntityTypes:function() {
 		var documents = this.getDocuments();
 		this.entityTypes = [];
 		for(var i in documents) {
@@ -151,6 +161,19 @@ enyo.kind({
 				this.entityTypes.push(eType)
 		}
 		this.entityTypes.sort();
+	},
+	applyFilter:function() {
+		var filterString = this.$.filterInput.getValue();
+		var filtered = new Array();
+		var unfiltered = this.getDocuments();
+		for(var i in unfiltered) {
+			if(unfiltered[i].__document_id.indexOf(filterString) != -1)
+				filtered.push(unfiltered[i]);
+		}
+		this.setFilteredDocuments(filtered);
+	},
+	filteredDocumentsChanged:function(oldValue,newValue) {
+		var documents = this.getFilteredDocuments();
 		this.$.documentList.setCount(documents?documents.length:0);
 		this.$.documentList.refresh();
 	},
@@ -167,7 +190,7 @@ enyo.kind({
 		this.$.documentList.refresh();
 	},
 	renderDocument:function(sender,event) {
-		var docs = this.getDocuments();
+		var docs = this.getFilteredDocuments();
 		var doc = docs[event.index];
 
 		this.$.documentId.setContent(doc.__document_id);
@@ -189,7 +212,7 @@ enyo.kind({
 		return true;
 	},
 	renderDivider:function(sender,event) {
-		var docs = this.getDocuments();
+		var docs = this.getFilteredDocuments();
 		var doc = docs[event.index];
 
 		switch (this.getSortFunction()) {
@@ -221,6 +244,7 @@ enyo.kind({
 		}
 	},
 	selectDocument:function(sender,event) {
+		debugger;
 		this.doDocumentSelected({documentId:this.getDocuments()[event.index].__document_id});
 	}
 });
