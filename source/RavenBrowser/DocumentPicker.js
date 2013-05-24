@@ -88,40 +88,42 @@ enyo.kind({
 			this.loader.abort();
 
 		this.loader = this.getApi().getDocuments(this.getTenantId(),
-			enyo.bind(this, function(documentIds) {
-				this.setDocuments(documentIds);
-				this.loader = null;
-			}),
-			enyo.bind(this, function(progress) {
-				this.$.loadingBar.animateProgressTo(progress.loaded * 100 / progress.total);
-				this.$.loadingDescription.setContent(progress.loaded+" of "+progress.total);
-
-				if(progress.loaded == progress.total)
-					enyo.job("closeLoadingDrawer", enyo.bind(this, function() {
-							this.$.loadingDrawer.setOpen(false);
-						}),1000);
-			}),
-			enyo.bind(this,function(sender,response) {
-				switch (response)
-				{
-				case 404:
-					enyo.create({
-						kind:"onyx.Toast",
-						content:"Creating index."
-					});
-					this.getApi().ensureStartup(this.getTenantId(),enyo.bind(this,this.loadDocuments));
-					break;
-				case 0:
-					break;
-				default:
-					if(sender.xhrResponse)
-						this.gotError(JSON.parse(sender.xhrResponse.body));
-				}
-			}));
-
+			enyo.bind(this, "loadDocumentsHandler"),
+			enyo.bind(this, "loadDocumentsProgressHandler"),
+			enyo.bind(this, "loadDocumentsErrorHandler"));
 		this.$.loadingBar.setProgress(0);
 		this.$.loadingDrawer.setOpen(true);
 		this.$.loadingDescription.setContent("0 of 0");
+	},
+	loadDocumentsHandler:function(documentIds) {
+		this.setDocuments(documentIds);
+		this.loader = null;
+	},
+	loadDocumentsProgressHandler:function(progress) {
+		this.$.loadingBar.animateProgressTo(progress.loaded * 100 / progress.total);
+		this.$.loadingDescription.setContent(progress.loaded+" of "+progress.total);
+
+		if(progress.loaded == progress.total)
+			enyo.job("closeLoadingDrawer", enyo.bind(this, function() {
+					this.$.loadingDrawer.setOpen(false);
+				}),1000);
+	},
+	loadDocumentsErrorHandler:function(sender,response) {
+		switch (response)
+		{
+		case 404:
+			enyo.create({
+				kind:"onyx.Toast",
+				content:"Creating index."
+			});
+			this.getApi().ensureStartup(this.getTenantId(),enyo.bind(this,this.loadDocuments));
+			break;
+		case 0:
+			break;
+		default:
+			if(sender.xhrResponse)
+				this.gotError(JSON.parse(sender.xhrResponse.body));
+		}
 	},
 	gotError:function(response) {
 		this.doErrorReceived({error:response.Error});
@@ -214,6 +216,8 @@ enyo.kind({
 				this.$.item.applyStyle("border-left","none");
 				this.$.divider.applyStyle("background-image","linear-gradient(90deg, #333333 0%, #EAEAEA 100%)");
 				break;
+			default:
+				this.$.divider.setShowing(false);
 		}
 	},
 	selectDocument:function(sender,event) {
