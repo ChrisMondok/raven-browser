@@ -19,13 +19,6 @@ enyo.kind({
 	components:[
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", style:"width:100%", components:[
-				{kind:"onyx.InputDecorator", fit:true, components:[
-					{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
-				]},
-				{kind:"onyx.RadioGroup", onActivate: 'tabChanged', controlClasses:"onyx-tabbutton", components:[
-					{name:"dataTabButton", active:true, content:"Data"},
-					{name:"metaTabButton", content:"Meta"}
-				]},
 			]},
 		]},
 		{name:"tabPanel", kind:"Panels", arrangerKind:"CardSlideInArranger", draggable:false, fit:true, components:[
@@ -45,8 +38,14 @@ enyo.kind({
 		]},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", style:"width:100%", components:[
+				{kind:"onyx.InputDecorator", fit:true, components:[
+					{name:"documentIdInput", kind:"onyx.Input", style:"width:100%", onchange:"documentIdInputChanged"}
+				]},
+				{kind:"onyx.RadioGroup", onActivate: 'tabChanged', controlClasses:"onyx-tabbutton", components:[
+					{name:"dataTabButton", active:true, content:"Data"},
+					{name:"metaTabButton", content:"Meta"}
+				]},
 				{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument", disabled:true},
-				{fit:true},
 				{kind:"onyx.MenuDecorator", components:[
 					{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
 					{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
