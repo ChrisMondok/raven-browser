@@ -30,7 +30,7 @@ enyo.kind({
 				value:300,
 				unit:'px',
 				components:[
-					{kind:"Scroller", controlClasses:'nice-margin', style:"height:100%", components:[
+					{kind:"Scroller", horizontal:"hidden", controlClasses:'nice-margin', style:"height:100%", touchOverscroll:false, components:[
 						{kind:"onyx.Groupbox", components:[
 							{kind:"onyx.GroupboxHeader", content:"Raven Entity Name"},
 							{kind:"onyx.InputDecorator", style:"display:block", components:[
@@ -39,7 +39,9 @@ enyo.kind({
 						]},
 						{kind:"onyx.Groupbox", components:[
 							{kind:"onyx.GroupboxHeader", content:"Metadata"},
-							{name:"metadataDisplay", tag:"pre", style:"margin:0"},
+							{kind:"Scroller", style:"width:100%", horizontal:"auto", vertical:"hidden", components:[
+								{name:"metadataDisplay", tag:"pre", style:"margin:0"},
+							]},
 						]},
 					]},
 				]
