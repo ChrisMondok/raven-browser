@@ -57,9 +57,11 @@ enyo.kind({
 		var selectedDocument = event.documentId;
 		this.$.documentViewer.setDocumentId(selectedDocument);
 		if(selectedDocument)
+		{
 			this.$.documentViewer.loadDocument();
-		if(enyo.Panels.isScreenNarrow())
-			this.$.slidingPanels.setIndex(2);
+			if(enyo.Panels.isScreenNarrow())
+				this.$.slidingPanels.setIndex(2);
+		}
 	},
 	showError:function(sender,event) {
 		this.$.infoPopupContent.setContent(event.error);
