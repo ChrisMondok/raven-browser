@@ -244,6 +244,6 @@ enyo.kind({
 		}
 	},
 	selectDocument:function(sender,event) {
-		this.doDocumentSelected({documentId:this.getDocuments()[event.index].__document_id});
+		this.doDocumentSelected({documentId:this.getFilteredDocuments()[event.index].__document_id});
 	}
 });
