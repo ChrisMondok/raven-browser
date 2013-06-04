@@ -74,8 +74,6 @@ enyo.kind({
 		this.inherited(arguments);
 		this.$.reloadButton.setDisabled(!this.getTenantId());
 		this.setDocuments([]);
-		this.setSortFunction(sortFunctions["Entity Type"]);
-		window.DP = this;
 	},
 	tenantIdChanged:function(){
 		var selection = this.$.documentList.getSelection();
@@ -141,11 +139,13 @@ enyo.kind({
 			this.sortDocuments();
 			this.documentsChanged(oldValue,docs)
 		}
+		else
+			console.log("Documents didn't change");
 	},
 	sortDocuments:function() {
 		var sortFn = this.getSortFunction();
-		var docs = this.getFilteredDocuments();
-		if(sortFn && docs)
+		var docs = this.getDocuments();
+		if(sortFn && docs && docs.length)
 			docs.sort(sortFn);
 	},
 	documentsChanged:function(oldValue,newValue) {
@@ -178,6 +178,7 @@ enyo.kind({
 		this.$.documentList.refresh();
 	},
 	setSortFunction:function(functionName) {
+		console.log("Sort function changed to "+functionName);
 		var oldValue = this.sortFunction;
 		var newValue = RavenBrowser.DocumentPicker.sortFunctions[functionName];
 		if(newValue != oldValue) {
