@@ -44,10 +44,6 @@ enyo.kind({
 			]},
 		]},
 	],
-	create:function() {
-		this.inherited(arguments);
-		window.S = this;
-	},
 	apiChanged:function() {
 		this.$.ravenHostInput.setValue(this.getApi().getRavenHost());
 		this.$.ravenPortInput.setValue(this.getApi().getRavenPort());
