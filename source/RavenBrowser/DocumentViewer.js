@@ -55,17 +55,6 @@ enyo.kind({
 					]},
 					{name:"reloadButton", kind:"onyx.Button", content:"Load", ontap:"loadDocument", disabled:true},
 					{name:"metadataButton", kind:"onyx.Button", content:"Metadata", ontap:"showMetadata"},
-					{kind:"onyx.MenuDecorator", components:[
-						{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
-						{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
-							components:[
-								{content:"This cannot be undone"},
-							],
-							actionButtons:[
-								{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
-								{content:"Delete", classes:"onyx-negative", ontap:"deleteDocument"}
-						]},
-					]},
 					{name:"saveButton", kind:"onyx.Button", classes:"onyx-affirmative", content:"Save", ontap:'saveDocument', disabled:true},
 				]},
 			]},
@@ -85,7 +74,6 @@ enyo.kind({
 		var eName = response["@metadata"]["Raven-Entity-Name"];
 		this.$.entityNameInput.setValue(eName || "");
 		//this.$.metadataInput.setValue(JSON.stringify(response["@metadata"],undefined,2));
-		this.$.deleteButton.setDisabled(false);
 	},
 	gotError:function(sender,error) {
 		switch (error)
@@ -101,7 +89,6 @@ enyo.kind({
 		this.$.documentIdInput.setValue(this.getDocumentId());
 		this.$.saveButton.setDisabled(!this.getDocumentId());
 		this.$.reloadButton.setDisabled(!this.getDocumentId());
-		this.$.deleteButton.setDisabled(true);
 	},
 	tenantIdChanged:function() {
 		this.setDocumentId("");
@@ -146,24 +133,6 @@ enyo.kind({
 			kind:"onyx.Toast",
 			content:event.Key+" saved."
 		});
-	},
-	closeDeletePopup:function() {
-		this.$.deletePopup.hide();
-	},
-	deleteDocument:function(sender,event) {
-		this.closeDeletePopup();
-		this.getApi().deleteDocument(this.getTenantId(), this.getDocumentId(), enyo.bind(this,"documentDeleted"), enyo.bind(this,"documentDeleteFailed"));
-	},
-	documentDeleted:function(sender,event) {
-		this.setDocumentId(null);
-		this.$.documentBodyInput.setValue("");
-		enyo.create({
-			kind:"onyx.Toast",
-			content:"Document deleted."
-		});
-	},
-	documentDeleteFailed:function(sender,event) {
-		this.doErrorReceived({error:"Failed to delete document."});
 	},
 	showMetadata:function(sender,event) {
 		if(this.$.metaSlider.getValue())

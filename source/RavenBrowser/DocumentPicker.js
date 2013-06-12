@@ -42,7 +42,7 @@ enyo.kind({
 	entityTypes:null,
 	events:{
 		onErrorReceived:"",
-		onDocumentSelected:"",
+		onDocumentSelected:""
 	},
 	loader:null,
 	components:[
@@ -51,9 +51,9 @@ enyo.kind({
 				{name:"filterInput", kind:"onyx.Input", onchange:"applyFilter", placeholder:"Filter", type:"search", classes:"max-width"}
 			]},
 		]},
-		{name:"documentList", onSelect:"selectDocument", kind:"List", fit:true, onSetupItem:"renderDocument", components:[
+		{name:"documentList", kind:"List", noSelect:true, fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", content:"Divider"},
-			{kind:"onyx.Item", components:[
+			{kind:"onyx.Item", ontap:"pickDocument", components:[
 				{name:"documentId"},
 			]},
 		]},
@@ -64,8 +64,20 @@ enyo.kind({
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", classes:"max-width", components:[
 				{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"loadDocuments"},
+				{kind:"onyx.MenuDecorator", components:[
+					{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
+					{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
+						components:[
+							{content:"This cannot be undone"},
+						],
+						actionButtons:[
+							{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
+							{content:"Delete", classes:"onyx-negative", ontap:"deleteDocuments"}
+					]},
+				]},
 			]},
 		]},
+		{name:"selection", kind:"Selection", onSelect:"rerenderDocument", onDeselect:"rerenderDocument", onChange:"selectionChanged"},
 	],
 	statics:{
 		sortFunctions:sortFunctions
@@ -74,11 +86,15 @@ enyo.kind({
 		this.inherited(arguments);
 		this.$.reloadButton.setDisabled(!this.getTenantId());
 		this.setDocuments([]);
+
+		window.L = this.$.documentList;
+		window.S = this.$.selection;
+		window.D = this;
 	},
 	tenantIdChanged:function(){
-		var selection = this.$.documentList.getSelection();
+		var selection = this.$.selection.getSelected();
 		for(var s in selection.selected) {
-			this.$.documentList.deselect(s);
+			this.$.selection.deselect(s);
 		}
 		var tenantId = this.getTenantId();
 		if(tenantId)
@@ -136,11 +152,8 @@ enyo.kind({
 		var oldValue = this.documents;
 		if(docs != oldValue) {
 			this.documents = docs;
-			this.sortDocuments();
 			this.documentsChanged(oldValue,docs)
 		}
-		else
-			console.log("Documents didn't change");
 	},
 	sortDocuments:function() {
 		var sortFn = this.getSortFunction();
@@ -150,6 +163,7 @@ enyo.kind({
 	},
 	documentsChanged:function(oldValue,newValue) {
 		this.updateEntityTypes();
+		this.sortDocuments();
 		this.applyFilter();
 	},
 	updateEntityTypes:function() {
@@ -178,7 +192,6 @@ enyo.kind({
 		this.$.documentList.refresh();
 	},
 	setSortFunction:function(functionName) {
-		console.log("Sort function changed to "+functionName);
 		var oldValue = this.sortFunction;
 		var newValue = RavenBrowser.DocumentPicker.sortFunctions[functionName];
 		if(newValue != oldValue) {
@@ -188,7 +201,7 @@ enyo.kind({
 	},
 	sortFunctionChanged:function(oldValue,newValue) {
 		this.sortDocuments();
-		this.$.documentList.refresh();
+		this.applyFilter();
 	},
 	renderDocument:function(sender,event) {
 		var docs = this.getFilteredDocuments();
@@ -198,7 +211,7 @@ enyo.kind({
 
 		this.renderDivider(sender,event);
 
-		this.$.item.addRemoveClass("selected",sender.isSelected(event.index));
+		this.$.item.addRemoveClass("selected",this.$.selection.isSelected(event.index));
 
 		var eType = doc["@metadata"]["Raven-Entity-Name"];
 
@@ -209,7 +222,6 @@ enyo.kind({
 		else
 			this.$.item.applyStyle("border-left","0.5ex solid #333");
 
-
 		return true;
 	},
 	renderDivider:function(sender,event) {
@@ -217,34 +229,88 @@ enyo.kind({
 		var doc = docs[event.index];
 
 		switch (this.getSortFunction()) {
-			case sortFunctions["Entity Type"]:
-				var eType = doc["@metadata"]["Raven-Entity-Name"];
-				this.$.divider.setContent(eType || "Untyped");
-				this.$.divider.setShowing(!docs[event.index-1] || doc["@metadata"]["Raven-Entity-Name"] != docs[event.index-1]["@metadata"]["Raven-Entity-Name"]);
-				if(this.entityTypes.length) {
-					if(eType) {
-						var eHue = 360*this.entityTypes.indexOf(eType)/this.entityTypes.length
-						this.$.divider.applyStyle("background-image","linear-gradient(90deg, hsl("+eHue+",50%,50%) 0%, #EAEAEA 100%)");
-					}
-					else {
-						this.$.divider.applyStyle("background-image","linear-gradient(90deg, #333333 0%, #EAEAEA 100%)");
-					}
+		case sortFunctions["Entity Type"]:
+			var eType = doc["@metadata"]["Raven-Entity-Name"];
+			this.$.divider.setContent(eType || "Untyped");
+			this.$.divider.setShowing(!docs[event.index-1] || doc["@metadata"]["Raven-Entity-Name"] != docs[event.index-1]["@metadata"]["Raven-Entity-Name"]);
+			if(this.entityTypes.length) {
+				if(eType) {
+					var eHue = 360*this.entityTypes.indexOf(eType)/this.entityTypes.length
+					this.$.divider.applyStyle("background-image","linear-gradient(90deg, hsl("+eHue+",50%,50%) 0%, #EAEAEA 100%)");
+					this.$.divider.applyStyle("color","black");
 				}
 				else {
-					this.$.divider.applyStyle("background-image","none");
+					this.$.divider.applyStyle("background-image","linear-gradient(90deg, #333333 0%, #EAEAEA 100%)");
+				this.$.divider.applyStyle("color","white");
 				}
-				break;
-			case sortFunctions["Document ID"]:
-				this.$.divider.setContent(doc.__document_id.charAt(0).toUpperCase());
-				this.$.divider.setShowing(!docs[event.index-1] || doc.__document_id.charAt(0) != docs[event.index-1].__document_id.charAt(0));
-				this.$.item.applyStyle("border-left","none");
-				this.$.divider.applyStyle("background-image","linear-gradient(90deg, #333333 0%, #EAEAEA 100%)");
-				break;
-			default:
-				this.$.divider.setShowing(false);
+			}
+			else {
+				this.$.divider.applyStyle("background-image","none");
+			}
+			break;
+		case sortFunctions["Document ID"]:
+			this.$.divider.setContent(doc.__document_id.charAt(0).toUpperCase());
+			this.$.divider.setShowing(!docs[event.index-1] || doc.__document_id.charAt(0) != docs[event.index-1].__document_id.charAt(0));
+			this.$.item.applyStyle("border-left","none");
+			this.$.divider.applyStyle("background-image","linear-gradient(90deg, #333333 0%, #EAEAEA 100%)");
+			this.$.divider.applyStyle("color","white");
+			break;
+		default:
+			this.$.divider.setShowing(false);
 		}
 	},
-	selectDocument:function(sender,event) {
+	pickDocument:function(sender,event) {
 		this.doDocumentSelected({documentId:this.getFilteredDocuments()[event.index].__document_id});
-	}
+
+		if(this.$.selection.getMulti() && !(event.ctrlKey || event.shiftKey)) {
+			var keys = this.$.selection.getSelected();
+			for(var key in keys)
+				this.$.selection.deselect(key);
+		}
+
+		this.$.selection.setMulti(event.ctrlKey || event.shiftKey);
+		if(!event.shiftKey)
+		{
+			this._lastSelected = event.index
+			this.$.selection.toggle(event.index);
+		}
+		else
+		{
+			var start = Math.min(event.index,this._lastSelected);
+			var end = Math.max(event.index,this._lastSelected);
+			for(var i = start; i <= end; i++)
+				this.$.selection.setByKey(i,true);
+		}
+	},
+	rerenderDocument:function(sender,event) {
+		this.$.documentList.renderRow(event.key);
+	},
+	selectionChanged:function(sender,event) {
+		this.$.deleteButton.setDisabled(!Boolean(
+			Object.keys(this.$.selection.getSelected()).length
+		));
+	},
+	deleteDocuments:function(sender,event) {
+		this.closeDeletePopup();
+		for(var key in this.$.selection.getSelected())
+		{
+			var id = this.getFilteredDocuments()[key].__document_id;
+			this.getApi().deleteDocument(this.getTenantId(), id, enyo.bind(this,"documentDeleted",sender,event,key), enyo.bind(this,"documentDeleteFailed"));
+		}
+	},
+	documentDeleted:function(sender,event,index) {
+		enyo.create({
+			kind:"onyx.Toast",
+			content:"Document deleted."
+		});
+		this.$.selection.deselect(index);
+		enyo.job("reload",enyo.bind(this,this.loadDocuments),1000);
+	},
+	documentDeleteFailed:function(sender,event) {
+		this.doErrorReceived({error:"Failed to delete document."});
+	},
+	closeDeletePopup:function() {
+		this.$.deletePopup.hide();
+
+	},
 });
