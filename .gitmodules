@@ -6,7 +6,7 @@
 	url = git@github.com:enyojs/layout.git
 [submodule "lib/onyx"]
 	path = lib/onyx
-	url = git@github.com:ChrisMondok/onyx.git
+	url = git@github.com:enyojs/onyx.git
 [submodule "lib/g11n"]
 	path = lib/g11n
 	url = git@github.com:enyojs/g11n.git
