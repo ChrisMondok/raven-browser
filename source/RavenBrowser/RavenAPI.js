@@ -78,13 +78,13 @@ enyo.kind({
 						for(var i = 0; i < response.Results.length; i++)
 							loader.results.push(response.Results[i]);
 
-						if(loader.results.length == response.TotalResults)
+						if(loader.results.length == (response.TotalResults - response.SkippedResults) || response.Results.length == 0)
 							callback(loader.results);
 						else
 							loader.loadNextBatch();
 
 						if(progressCallback)
-							progressCallback({loaded:loader.results.length, total:response.TotalResults});
+							progressCallback({loaded:loader.results.length, total:response.TotalResults - response.SkippedResults});
 
 					});
 
