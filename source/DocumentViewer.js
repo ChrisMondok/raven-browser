@@ -23,14 +23,15 @@ enyo.kind({
 				name:"metaSlider",
 				kind:"Slideable",
 				classes:"sliding-overlay",
-				style:"width:64px; position:absolute; height:300; margin-left:auto; margin-right:auto; left:0%; bottom:0%; width:100%",
+				style:"width:64px; position:absolute; margin-left:auto; margin-right:auto; left:0%; bottom:0%; width:100%",
 				axis:'v',
 				min:0,
-				max:300,
-				value:300,
-				unit:'px',
+				max:100,
+				value:100,
+				unit:'%',
+				draggable:false,
 				components:[
-					{kind:"Scroller", horizontal:"hidden", controlClasses:'nice-margin', style:"height:100%", touchOverscroll:false, components:[
+					{kind:"Scroller", controlClasses:"nice-margin", style:"width:100%; max-height:16em;", components:[
 						{kind:"onyx.Groupbox", components:[
 							{kind:"onyx.GroupboxHeader", content:"Raven Entity Name"},
 							{kind:"onyx.InputDecorator", style:"display:block", components:[
@@ -38,14 +39,11 @@ enyo.kind({
 							]},
 						]},
 						{kind:"onyx.Groupbox", components:[
-							{kind:"onyx.GroupboxHeader", content:"Metadata"},
-							{kind:"Scroller", style:"width:100%", horizontal:"auto", vertical:"hidden", components:[
-								{name:"metadataDisplay", tag:"pre", style:"margin:0"},
-							]},
+						{kind:"onyx.GroupboxHeader", content:"Metadata"},
+							{name:"metadataDisplay", tag:"pre", style:"margin:0"},
 						]},
 					]},
-				]
-			},
+				]},
 		]},
 		{style:"z-index:2; position:relative;", components:[
 			{kind:"onyx.Toolbar", components:[
@@ -73,7 +71,6 @@ enyo.kind({
 		this.$.metadataDisplay.setContent(JSON.stringify(response["@metadata"],undefined,2));
 		var eName = response["@metadata"]["Raven-Entity-Name"];
 		this.$.entityNameInput.setValue(eName || "");
-		//this.$.metadataInput.setValue(JSON.stringify(response["@metadata"],undefined,2));
 	},
 	gotError:function(sender,error) {
 		switch (error)
