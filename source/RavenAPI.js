@@ -26,7 +26,7 @@ enyo.kind({
 			.error(errorCallback);
 	},
 	getDocuments:function(tenantId, callback, progressCallback, errorCallback) {
-		return this.loadInMultipleRequests(
+		return this.loadAllInMultipleRequests(
 			this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName",
 			{fetch:"__document_id", sort:"__document_id", timeout:this.getTimeout()},
 			callback,
@@ -44,29 +44,37 @@ enyo.kind({
 			})
 			.error(errorCallback);
 	},
-	saveDocument:function(tenantId, documentId, value, callback, errorCallback) {
+//	loadRangeOfDocuments:function(tenantId,start,count,callback,errorCallback) {
+//		return new enyo.Ajax({
+//			url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName"
+//		}).go({
+//			start:start,
+//			pageSize:count
+//		}).response(callback).error(errorCallback);
+//	},
+	saveDocument:function(tenantId, documentId, value) {
 		if(value.hasOwnProperty('@metadata') && value['@metadata']['Raven-Entity-Name'])
 			headers = {'Raven-Entity-Name':value['@metadata']['Raven-Entity-Name']};
 		else
 			headers = {};
 
-		new enyo.Ajax({
+		return new enyo.Ajax({
 			method:"PUT",
 			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
 			contentType:"application/json",
 			cacheBust:false,
 			postBody:value,
 			headers:headers
-		}).go().response(callback).error(errorCallback);
+		}).go();
 	},
-	deleteDocument:function(tenantId, documentId, callback, errorCallback) {
-		new enyo.Ajax({
+	deleteDocument:function(tenantId, documentId) {
+		return new enyo.Ajax({
 			method:"DELETE",
 			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
 			cacheBust:false,
-		}).go().response(callback).error(errorCallback);
+		}).go();
 	},
-	loadInMultipleRequests:function(url,params,callback,progressCallback,errorCallback) {
+	loadAllInMultipleRequests:function(url,params,callback,progressCallback,errorCallback) {
 		var loader = {
 			ajax:null,
 			results:[],

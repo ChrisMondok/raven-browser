@@ -295,7 +295,9 @@ enyo.kind({
 		for(var key in this.$.selection.getSelected())
 		{
 			var id = this.getFilteredDocuments()[key].__document_id;
-			this.getApi().deleteDocument(this.getTenantId(), id, enyo.bind(this,"documentDeleted",sender,event,key), enyo.bind(this,"documentDeleteFailed"));
+			this.getApi().deleteDocument(this.getTenantId(), id)
+				.response(enyo.bind(this,"documentDeleted",sender,event,key))
+				.error(enyo.bind(this,"documentDeleteFailed"));
 		}
 	},
 	documentDeleted:function(sender,event,index) {

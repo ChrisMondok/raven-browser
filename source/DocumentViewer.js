@@ -23,25 +23,26 @@ enyo.kind({
 				name:"metaSlider",
 				kind:"Slideable",
 				classes:"sliding-overlay",
-				style:"width:64px; position:absolute; margin-left:auto; margin-right:auto; left:0%; bottom:0%; width:100%",
+				style:"position:absolute; margin-left:auto; margin-right:auto; left:0%; bottom:0%; width:100%; height:480px",
 				axis:'v',
 				min:0,
-				max:100,
-				value:100,
-				unit:'%',
+				max:480,
+				value:480,
+				unit:'px',
 				draggable:false,
 				components:[
-					{kind:"Scroller", controlClasses:"nice-margin", style:"width:100%; max-height:16em;", components:[
+					{kind:"FittableRows", classes:"enyo-fit", controlClasses:"nice-margin", components:[
 						{kind:"onyx.Groupbox", components:[
-							{kind:"onyx.GroupboxHeader", content:"Raven Entity Name"},
 							{kind:"onyx.InputDecorator", style:"display:block", components:[
-								{name:"entityNameInput", kind:"onyx.Input", placeholder:"Raven-Entity-Name"},
+								{name:"entityNameInput", kind:"onyx.Input", style:"width:100%", placeholder:"Raven-Entity-Name"},
+							]},
+							{kind:"onyx.InputDecorator", style:"display:block", components:[
+								{name:"clrTypeInput", kind:"onyx.Input", style:"width:100%", placeholder:"Raven-Clr-Type"},
 							]},
 						]},
-						{kind:"onyx.Groupbox", components:[
-						{kind:"onyx.GroupboxHeader", content:"Metadata"},
-							{name:"metadataDisplay", tag:"pre", style:"margin:0"},
-						]},
+						{kind:"Scroller", fit:true, components:[
+							{name:"metadataDisplay", showing:true, tag:"pre", style:"margin:0"}
+						]}
 					]},
 				]},
 		]},
@@ -69,8 +70,10 @@ enyo.kind({
 
 		this.$.documentBodyInput.setValue(JSON.stringify(data,undefined,2));
 		this.$.metadataDisplay.setContent(JSON.stringify(response["@metadata"],undefined,2));
-		var eName = response["@metadata"]["Raven-Entity-Name"];
+		var eName = response["@metadata"]["Raven-Entity-Name"],
+			clrType = response["@metadata"]["Raven-Clr-Type"];
 		this.$.entityNameInput.setValue(eName || "");
+		this.$.clrTypeInput.setValue(clrType || "");
 	},
 	gotError:function(sender,error) {
 		switch (error)
@@ -106,13 +109,19 @@ enyo.kind({
 			return;
 		}
 
-		var eName = this.$.entityNameInput.getValue()
-			if(eName)
-				joined["@metadata"] = {"Raven-Entity-Name": eName};
+		var metadata = {};
+		var eName = this.$.entityNameInput.getValue(),
+			clrType = this.$.clrTypeInput.getValue();
 
-		this.getApi().saveDocument(this.getTenantId(), this.getDocumentId(), joined,
-			enyo.bind(this,"documentSaved"),
-			enyo.bind(this,"documentSaveFailed"));
+		if(eName)
+			metadata["Raven-Entity-Name"] = eName;
+		if(clrType)
+			metadata["Raven-Clr-Type"] = clrType;
+		joined["@metadata"] = metadata;
+
+		this.getApi().saveDocument(this.getTenantId(), this.getDocumentId(), joined)
+			.response(enyo.bind(this,"documentSaved"))
+			.error(enyo.bind(this,"documentSaveFailed"));
 	},
 	documentSaved:function(sender,response) {
 		this.setDocumentId(response.Key);
