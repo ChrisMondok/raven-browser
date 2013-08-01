@@ -25,24 +25,29 @@ enyo.kind({
 			.response(callback)
 			.error(errorCallback);
 	},
-	getDocuments:function(tenantId, callback, progressCallback, errorCallback) {
-		return this.loadAllInMultipleRequests(
-			this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName",
-			{fetch:"__document_id", sort:"__document_id", timeout:this.getTimeout()},
-			callback,
-			progressCallback,
-			errorCallback
-		);
+	getDocuments:function(tenantId) {
+		return new RavenBrowser.BatchLoader({
+			url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName",
+		}).go({
+			fetch:"__document_id",
+			sort:"__document_id",
+			timeout:this.getTimeout()
+		});
 	},
-	loadDocument:function(tenantId, documentId, callback, errorCallback) {
+	loadDocument:function(tenantId, documentId) {
+		var async = new enyo.Async();
 		new enyo.Ajax({ url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName" })
 			.go({query:"__document_id:"+documentId})
 			.response(function(ajax,response) {
 				if(response.Results.length != 1)
-					return errorCallback({error:"Got "+response.Results.length+" results."});
-				callback(ajax,response.Results[0]);	
+					async.fail({error:"Got "+response.Results.length+" results."});
+				else
+					async.go(response.Results[0]);
 			})
-			.error(errorCallback);
+			.error(function(response) {
+				async.fail(response);
+			});
+		return async;
 	},
 //	loadRangeOfDocuments:function(tenantId,start,count,callback,errorCallback) {
 //		return new enyo.Ajax({

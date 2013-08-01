@@ -107,19 +107,20 @@ enyo.kind({
 		if(this.loader)
 			this.loader.abort();
 
-		this.loader = this.getApi().getDocuments(this.getTenantId(),
-			enyo.bind(this, "loadDocumentsHandler"),
-			enyo.bind(this, "loadDocumentsProgressHandler"),
-			enyo.bind(this, "loadDocumentsErrorHandler"));
+		this.loader = this.getApi().getDocuments(this.getTenantId());
+		this.loader.response(this,"loadDocumentsHandler");
+		this.loader.progress(this,"loadDocumentsProgressHandler");
+		this.loader.error(this,"loadDocumentsErrorHandler");
+
 		this.$.loadingBar.setProgress(0);
 		this.$.loadingDrawer.setOpen(true);
 		this.$.loadingDescription.setContent("0 of 0");
 	},
-	loadDocumentsHandler:function(documentIds) {
+	loadDocumentsHandler:function(async, documentIds) {
 		this.setDocuments(documentIds);
 		this.loader = null;
 	},
-	loadDocumentsProgressHandler:function(progress) {
+	loadDocumentsProgressHandler:function(async, progress) {
 		this.$.loadingBar.animateProgressTo(progress.loaded * 100 / progress.total);
 		this.$.loadingDescription.setContent(progress.loaded+" of "+progress.total);
 
@@ -128,7 +129,7 @@ enyo.kind({
 					this.$.loadingDrawer.setOpen(false);
 				}),1000);
 	},
-	loadDocumentsErrorHandler:function(sender,response) {
+	loadDocumentsErrorHandler:function(async, response) {
 		switch (response)
 		{
 		case 404:

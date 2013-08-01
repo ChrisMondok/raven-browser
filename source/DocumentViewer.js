@@ -60,7 +60,9 @@ enyo.kind({
 		]},
 	],
 	loadDocument:function() {
-		this.getApi().loadDocument(this.getTenantId(),this.getDocumentId(),enyo.bind(this,"gotResponse"), enyo.bind(this,"gotError"));
+		this.getApi().loadDocument(this.getTenantId(),this.getDocumentId())
+			.response(enyo.bind(this,"gotResponse"))
+			.error(enyo.bind(this,"gotError"));
 	},
 	gotResponse:function(sender,response) {
 		var data = {};
@@ -76,13 +78,18 @@ enyo.kind({
 		this.$.clrTypeInput.setValue(clrType || "");
 	},
 	gotError:function(sender,error) {
-		switch (error)
+		if(error.error)
+			this.doErrorReceived(error);
+		else
 		{
-		case 404:
-			this.doErrorReceived({error:"Document not found"});
-			break;
-		default:
-			this.doErrorReceived({error:"Failed to load document"});
+			switch (error)
+			{
+			case 404:
+				this.doErrorReceived({error:"Document not found"});
+				break;
+			default:
+				this.doErrorReceived({error:"Failed to load document"});
+			}
 		}
 	},
 	documentIdChanged:function() {
@@ -101,7 +108,6 @@ enyo.kind({
 		{
 			input.setValue(JSON.stringify(JSON.parse(value),undefined,2));
 			joined = JSON.parse(value);
-			//joined["@metadata"] = JSON.parse(this.$.metadataInput.getValue());
 		}
 		catch(e)
 		{
