@@ -26,6 +26,7 @@ enyo.kind({
 		}).go({
 			fetch:"__document_id",
 			sort:"__document_id",
+			pageSize:this.getPageSize(),
 			timeout:this.getTimeout()
 		});
 	},
@@ -84,46 +85,6 @@ enyo.kind({
 			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
 			cacheBust:false,
 		}).go();
-	},
-	loadAllInMultipleRequests:function(url,params,callback,progressCallback,errorCallback) {
-		var loader = {
-			ajax:null,
-			results:[],
-			loadNextBatch:enyo.bind(this,function() {
-				loader.ajax = new enyo.Ajax({url:url});
-				loader.ajax.go(enyo.mixin({start:loader.results.length, pageSize:this.getPageSize()},params));
-
-				loader.ajax.response(this,function(sender,response){
-						for(var i = 0; i < response.Results.length; i++)
-							loader.results.push(response.Results[i]);
-
-						if(loader.results.length == (response.TotalResults - response.SkippedResults) || response.Results.length == 0)
-							callback(loader.results);
-						else
-							loader.loadNextBatch();
-
-						if(progressCallback)
-							progressCallback({loaded:loader.results.length, total:response.TotalResults - response.SkippedResults});
-
-					});
-
-				if(errorCallback)
-					loader.ajax.error(this,errorCallback);
-
-				if(progressCallback)
-					loader.ajax.response(this,function(sender,response) {
-						progressCallback({loaded:loader.results.length, total:response.TotalResults});
-					});
-			}),
-			abort:function() {
-				if(this.ajax)
-					this.ajax.fail(0);
-			}
-		};
-
-		loader.loadNextBatch();
-
-		return loader;
 	},
 	getRavenUrl:function() {
 		return "http://"+this.getRavenHost()+":"+this.getRavenPort()+"/";
