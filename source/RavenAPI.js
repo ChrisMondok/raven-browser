@@ -11,13 +11,8 @@ enyo.kind({
 		onConnectionChanged:"",
 	},
 	getTenants:function(callback, errorCallback) {
-		var tenants = [];
-		new enyo.Ajax({url:this.getRavenUrl()+"databases", timeout:this.getTimeout()})
-			.go()
-			.response(this,function(sender,response) {
-				callback(response);
-			})
-			.error(errorCallback);
+		return new enyo.Ajax({url:this.getRavenUrl()+"databases", timeout:this.getTimeout()})
+			.go();
 	},
 	ensureStartup:function(tenantId, callback, errorCallback) {
 		return new enyo.Ajax({url:this.getRavenUrl()+"databases/"+tenantId+"/silverlight/ensureStartup"})
@@ -33,6 +28,17 @@ enyo.kind({
 			sort:"__document_id",
 			timeout:this.getTimeout()
 		});
+	},
+	getDocumentCount:function(tenantId) {
+		var async = new enyo.Async();
+		new enyo.Ajax({
+			url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName"
+		})
+			.go({ pageSize:0 })
+			.response(function(sender,response) {
+				async.go(response.TotalResults);
+			});
+		return async;
 	},
 	loadDocument:function(tenantId, documentId) {
 		var async = new enyo.Async();

@@ -180,3 +180,8 @@ textarea {
 {
 	-webkit-appearance: none;
 }
+
+.inline
+{
+	display:inline-block;
+}

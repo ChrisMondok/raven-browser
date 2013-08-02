@@ -13,8 +13,9 @@ enyo.kind({
 	},
 	components:[
 		{name:"tenantList", kind:"List", style:"min-width:320px", onSetupItem:"renderTenant", onSelect:"selectTenant", fit:true, components:[
-			{kind:"onyx.Item", components:[
+			{kind:"onyx.Item", controlClasses:"inline", components:[
 				{name:"tenantName"},
+				{name:"documentCount", style:"float:right"}
 			]},
 		]},
 		{kind:"onyx.Toolbar", components:[
@@ -27,21 +28,44 @@ enyo.kind({
 	},
 	loadTenants:function() {
 		this.setTenants([]);
-		this.getApi().getTenants(enyo.bind(this,"setTenants"),enyo.bind(this,"handleError"));
+		this.getApi().getTenants()
+			.response(this,"gotTenants")
+			.error(this,"handleError");
+	},
+	gotTenants:function(sender,response) {
+		this.setTenants(response.map(
+			function(tenantId){
+				return {id:tenantId, documentCount:undefined};
+			}
+		));
 	},
 	handleError:function(sender,error) {
 		this.doErrorReceived({error:"Failed to load tenants"});
 	},
 	tenantsChanged:function() {
 		this.$.tenantList.setCount(this.getTenants().length);
+		this.loadDocumentCounts();
 		this.$.tenantList.refresh();
 	},
+	loadDocumentCounts:function() {
+		var api = this.getApi(),
+			list = this.$.tenantList;
+		this.getTenants().map(function(t, index){
+			console.log("Getting count for "+t.id);
+			api.getDocumentCount(t.id).response( function(sender,count) {
+				t.documentCount = count;
+				list.renderRow(index);
+			});
+		});
+	},
 	renderTenant:function(sender,event) {
-		this.$.tenantName.setContent(this.getTenants()[event.index]);
+		var tenant = this.getTenants()[event.index];
+		this.$.tenantName.setContent(tenant.id);
+		this.$.documentCount.setContent(tenant.documentCount);
 		this.$.item.addRemoveClass("selected",sender.isSelected(event.index));
 		return true;
 	},
 	selectTenant:function(sender,event) {
-		this.doTenantSelected({tenant:this.getTenants()[event.index]});
+		this.doTenantSelected({tenant:this.getTenants()[event.index].id});
 	},
 });
