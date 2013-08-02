@@ -16,7 +16,8 @@ enyo.kind({
 		onShowSettings:"showSettings",
 		onConnectionChanged:"connectionChanged",
 		onSortFunctionChanged:"setSortFunction",
-		onPageSizeChanged:"setPageSize"
+		onPageSizeChanged:"setPageSize",
+		onFetchDocumentCountChanged:"fetchDocumentCountChanged"
 	},
 	components:[
 		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
@@ -39,9 +40,14 @@ enyo.kind({
 		var port = localStorage.getItem("raven-port") || 8080;
 		var sortFunction = localStorage.getItem("sort-function") || "Entity Type";
 		var pageSize = localStorage.getItem('page-size') || 1024;
+		var fetchDocumentCount = JSON.parse(localStorage.getItem('fetch-document-count'));
+		if(fetchDocumentCount === undefined || fetchDocumentCount === null)
+			fetchDocumentCount = true;
 
 		this.$.settings.setSortFunction(sortFunction);
+		this.$.settings.setFetchDocumentCount(fetchDocumentCount);
 		this.$.documentPicker.setSortFunction(sortFunction);
+		this.$.tenantPicker.setFetchDocumentCount(fetchDocumentCount);
 
 		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port, pageSize:pageSize}));
 	},
@@ -96,6 +102,10 @@ enyo.kind({
 	setPageSize:function(sender,event) {
 		this.getApi().setPageSize(event.pageSize);
 		localStorage.setItem('page-size',event.pageSize);
-	}
+	},
+	fetchDocumentCountChanged:function(sender,event) {
+		this.$.tenantPicker.setFetchDocumentCount(event.fetchDocumentCount);
+		localStorage.setItem('fetch-document-count',event.fetchDocumentCount);
+	},
 });
 

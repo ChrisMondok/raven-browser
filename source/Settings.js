@@ -3,13 +3,15 @@ enyo.kind({
 	kind:"FittableRows",
 	published:{
 		api:null,
-		sortFunction:"Entity Type"
+		sortFunction:"Entity Type",
+		fetchDocumentCount:undefined
 	},
 	controlClasses:"nice-margin",
 	events:{
 		onServerChanged:"",
 		onSortFunctionChanged:"",
-		onPageSizeChanged:""
+		onPageSizeChanged:"",
+		onFetchDocumentCountChanged:""
 	},
 	components:[
 		{kind:"onyx.Groupbox", components:[
@@ -22,7 +24,10 @@ enyo.kind({
 			]},
 			{style:"padding:0.5em 0em;", components:[
 				{name:"pageSizeLabel", style:"padding:0em 0.5em;"},
-				{name:"pageSizeSlider", kind:"onyx.Slider", min:1, max:1024, increment:1, value:1024, onChange:"setPageSize", onChanging:"updatePageSizeLabel"},
+				{kind:"onyx.TooltipDecorator", components:[
+					{name:"pageSizeSlider", kind:"onyx.Slider", min:1, max:1024, increment:1, value:1024, onChange:"setPageSize", onChanging:"updatePageSizeLabel"},
+					{kind:"onyx.Tooltip", content:"Number of documents to load per request"}
+				]},
 				{style:"padding:0em 0.5em", components:[
 					{content:"1", style:"display:inline-block; text-align:left; width:50%"},
 					{content:"1024", style:"display:inline-block; text-align:right; width:50%"},
@@ -43,6 +48,16 @@ enyo.kind({
 				]},
 			]},
 		]},
+		{kind:"onyx.Groupbox", components:[
+			{kind:"onyx.GroupboxHeader", content:"Tenant Picker"},
+			{kind:"onyx.Item", controlClasses:"inline", components:[
+				{kind:"onyx.TooltipDecorator", defaultKind:"control", components:[
+					{name:"fetchDocumentCountToggle", kind:"onyx.ToggleButton", onChange:"toggleFetchDocumentCount"},
+					{kind:"onyx.Tooltip", content:"Makes a network request per tenant"}
+				]},
+				{content:"Fetch document count", style:"float:right; line-height:32px"},
+			]}
+		]}
 	],
 	apiChanged:function() {
 		this.$.ravenHostInput.setValue(this.getApi().getRavenHost());
@@ -61,6 +76,14 @@ enyo.kind({
 	},
 	sortFunctionChanged:function() {
 		this.doSortFunctionChanged({sortFunction:this.getSortFunction()});
+	},
+	toggleFetchDocumentCount:function(sender,event) {
+		this.setFetchDocumentCount(sender.getValue());
+	},
+	fetchDocumentCountChanged:function() {
+		var value = this.getFetchDocumentCount();
+		this.doFetchDocumentCountChanged({fetchDocumentCount:value});
+		this.$.fetchDocumentCountToggle.setValue(value);
 	},
 	setPageSize:function(sender,event) {
 		this.doPageSizeChanged({pageSize:sender.getValue()});

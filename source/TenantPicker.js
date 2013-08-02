@@ -9,7 +9,8 @@ enyo.kind({
 	},
 	published:{
 		tenants:null,
-		api:null
+		api:null,
+		fetchDocumentCount:false
 	},
 	components:[
 		{name:"tenantList", kind:"List", style:"min-width:320px", onSetupItem:"renderTenant", onSelect:"selectTenant", fit:true, components:[
@@ -44,14 +45,18 @@ enyo.kind({
 	},
 	tenantsChanged:function() {
 		this.$.tenantList.setCount(this.getTenants().length);
-		this.loadDocumentCounts();
+		if(this.getFetchDocumentCount())
+			this.loadDocumentCounts();
 		this.$.tenantList.refresh();
+	},
+	fetchDocumentCountChanged:function() {
+		if(this.getFetchDocumentCount() && this.getTenants())
+			this.loadDocumentCounts();
 	},
 	loadDocumentCounts:function() {
 		var api = this.getApi(),
 			list = this.$.tenantList;
 		this.getTenants().map(function(t, index){
-			console.log("Getting count for "+t.id);
 			api.getDocumentCount(t.id).response( function(sender,count) {
 				t.documentCount = count;
 				list.renderRow(index);
