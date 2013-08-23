@@ -5,20 +5,19 @@ enyo.kind({
 		ravenHost: "mds-d77gds1",
 		ravenPort: 8080,
 		timeout: 30000,
-		pageSize: 1024
+		pageSize: 1024,
+		secure:false
 	},
 	events:{
 		onConnectionChanged:"",
 	},
-	getTenants:function(callback, errorCallback) {
+	getTenants:function() {
 		return new enyo.Ajax({url:this.getRavenUrl()+"databases", timeout:this.getTimeout()})
 			.go();
 	},
-	ensureStartup:function(tenantId, callback, errorCallback) {
+	ensureStartup:function(tenantId) {
 		return new enyo.Ajax({url:this.getRavenUrl()+"databases/"+tenantId+"/silverlight/ensureStartup"})
-			.go()
-			.response(callback)
-			.error(errorCallback);
+			.go();
 	},
 	getDocuments:function(tenantId) {
 		return new RavenBrowser.BatchLoader({
@@ -56,14 +55,6 @@ enyo.kind({
 			});
 		return async;
 	},
-//	loadRangeOfDocuments:function(tenantId,start,count,callback,errorCallback) {
-//		return new enyo.Ajax({
-//			url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName"
-//		}).go({
-//			start:start,
-//			pageSize:count
-//		}).response(callback).error(errorCallback);
-//	},
 	saveDocument:function(tenantId, documentId, value) {
 		if(value.hasOwnProperty('@metadata') && value['@metadata']['Raven-Entity-Name'])
 			headers = {'Raven-Entity-Name':value['@metadata']['Raven-Entity-Name']};

@@ -49,7 +49,7 @@ enyo.kind({
 		this.$.documentPicker.setSortFunction(sortFunction);
 		this.$.tenantPicker.setFetchDocumentCount(fetchDocumentCount);
 
-		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port, pageSize:pageSize}));
+		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port, pageSize:pageSize, secure:secure}));
 	},
 	selectTenant:function(sender,event) {
 		var tenant = event.tenant;

@@ -133,16 +133,18 @@ textarea {
 	height:36px;
 }
 
-.picker-label {
+.label {
 	text-transform:uppercase;
 	color:#0091F2;
+	text-align:right;
+}
+.picker-label {
 	line-height:36px;
 	position:absolute;
 	right:1em;
 	top:0px;
 	height:100%;
 	width:100%;
-	text-align:right;
 }
 
 .picker-row .onyx-popup-decorator {

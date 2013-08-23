@@ -137,7 +137,7 @@ enyo.kind({
 				kind:"onyx.Toast",
 				content:"Creating index."
 			});
-			this.getApi().ensureStartup(this.getTenantId(),enyo.bind(this,this.loadDocuments));
+			this.getApi().ensureStartup(this.getTenantId()).response(this,this.loadDocuments);
 			break;
 		case 0:
 			break;
