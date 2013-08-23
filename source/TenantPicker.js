@@ -16,7 +16,7 @@ enyo.kind({
 		{name:"tenantList", kind:"List", style:"min-width:320px", onSetupItem:"renderTenant", onSelect:"selectTenant", fit:true, components:[
 			{kind:"onyx.Item", controlClasses:"inline", components:[
 				{name:"tenantName"},
-				{name:"documentCount", style:"float:right"}
+				{name:"documentCount", style:"float:right", classes:"label"}
 			]},
 		]},
 		{kind:"onyx.Toolbar", components:[

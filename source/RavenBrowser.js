@@ -17,7 +17,8 @@ enyo.kind({
 		onConnectionChanged:"connectionChanged",
 		onSortFunctionChanged:"setSortFunction",
 		onPageSizeChanged:"setPageSize",
-		onFetchDocumentCountChanged:"fetchDocumentCountChanged"
+		onFetchDocumentCountChanged:"fetchDocumentCountChanged",
+		onSecureChanged:"secureChanged"
 	},
 	components:[
 		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
@@ -40,12 +41,18 @@ enyo.kind({
 		var port = localStorage.getItem("raven-port") || 8080;
 		var sortFunction = localStorage.getItem("sort-function") || "Entity Type";
 		var pageSize = localStorage.getItem('page-size') || 1024;
+
+		var secure = JSON.parse(localStorage.getItem('secure'));
+		if(secure === undefined || secure === null)
+			secure = true;
+
 		var fetchDocumentCount = JSON.parse(localStorage.getItem('fetch-document-count'));
 		if(fetchDocumentCount === undefined || fetchDocumentCount === null)
 			fetchDocumentCount = true;
 
 		this.$.settings.setSortFunction(sortFunction);
 		this.$.settings.setFetchDocumentCount(fetchDocumentCount);
+		this.$.settings.setSecure(secure);
 		this.$.documentPicker.setSortFunction(sortFunction);
 		this.$.tenantPicker.setFetchDocumentCount(fetchDocumentCount);
 
@@ -107,5 +114,10 @@ enyo.kind({
 		this.$.tenantPicker.setFetchDocumentCount(event.fetchDocumentCount);
 		localStorage.setItem('fetch-document-count',event.fetchDocumentCount);
 	},
+	secureChanged:function(sender,event) {
+		if(this.getApi())
+			this.getApi().setSecure(event.secure);
+		localStorage.setItem('secure',event.secure);
+	}
 });
 

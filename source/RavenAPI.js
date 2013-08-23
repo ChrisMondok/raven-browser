@@ -78,13 +78,20 @@ enyo.kind({
 		}).go();
 	},
 	getRavenUrl:function() {
-		return "http://"+this.getRavenHost()+":"+this.getRavenPort()+"/";
+		return [
+			this.getSecure() ? "https://" :"http://",
+			this.getRavenHost(),
+			":",
+			this.getRavenPort(),
+			"/"].join('');
 	},
 	ravenHostChanged:function() {
 		this.doConnectionChanged();
 	},
 	ravenPortChanged:function() {
 		this.doConnectionChanged();
+	},
+	secureChanged:function() {
+		this.doConnectionChanged();
 	}
-
 });
