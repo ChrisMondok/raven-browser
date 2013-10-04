@@ -97,19 +97,30 @@ enyo.kind({
 
 		if(self.$.documentList.hasNode()) {
 			self.$.documentList.node.addEventListener('keydown', function(event) {
-				console.info("GOT IT");
 				switch (event.key) {
-					case "Down":
-						var last = Object.keys(self.$.selection.getSelected()).reduce(function(l,r){return (l > r ? l : r);},-1);
+					case "Esc":
 						self.clearSelection();
-						self.$.selection.select(Number(last) + 1);
-						event.preventDefault();
+						break;
+					case "Down":
+						var selected = Object.keys(self.$.selection.getSelected());
+						if(selected.length) {
+							var last = selected.reduce(function(l,r){return (l > r ? l : r);});
+							self.clearSelection();
+							self.$.selection.select(Number(last) + 1);
+							event.preventDefault();
+						}
 						break;
 					case "Up":
-						var first = Object.keys(self.$.selection.getSelected()).reduce(function(l,r){return (l < r ? l : r);},self.$.documentList.getCount());
-						self.clearSelection();
-						self.$.selection.select(Number(first) - 1);
-						event.preventDefault();
+						var selected = Object.keys(self.$.selection.getSelected());
+						if(selected.length) {
+							var first = selected.reduce(function(l,r){return (l > r ? l : r);});
+							self.clearSelection();
+							self.$.selection.select(Number(first) - 1);
+							event.preventDefault();
+						}
+						break;
+					case "Delete":
+						self.$.deleteButton.setActive(true);
 						break;
 					default:
 						console.info(event.key);
@@ -121,7 +132,7 @@ enyo.kind({
 
 	clearSelection:function() {
 		var selection = this.$.selection.getSelected();
-		for(var s in selection.selected) {
+		for(var s in selection) {
 			this.$.selection.deselect(s);
 		}
 	},
@@ -318,8 +329,9 @@ enyo.kind({
 	},
 
 	updateDocumentSelectedState:function(sender,event) {
-		if(this.$.selection.isSelected(event.key))
+		if(this.$.selection.isSelected(event.key)) {
 			this.doDocumentSelected({documentId:this.getFilteredDocuments()[event.key].__document_id});
+		}
 		
 		this.$.documentList.renderRow(event.key);
 	},
