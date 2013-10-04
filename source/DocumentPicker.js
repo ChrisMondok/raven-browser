@@ -49,7 +49,7 @@ enyo.kind({
 		{kind:"onyx.Toolbar", components:[
 			{kind:"onyx.InputDecorator", style:"display:block", components:[
 				{name:"filterInput", kind:"onyx.Input", onchange:"applyFilter", placeholder:"Filter", type:"search", classes:"max-width"}
-			]},
+			]}
 		]},
 		{name:"documentList", kind:"List", noSelect:true, fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", content:"Divider"},
@@ -59,7 +59,7 @@ enyo.kind({
 		]},
 		{name:"loadingDrawer", kind:"onyx.Drawer", classes:"footer-drawer", components:[
 			{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"Select a tenant"},
-			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true},
+			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true}
 		]},
 		{kind:"onyx.Toolbar", components:[
 			{kind:"FittableColumns", classes:"max-width", components:[
@@ -68,16 +68,16 @@ enyo.kind({
 					{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
 					{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
 						components:[
-							{content:"This cannot be undone"},
+							{content:"This cannot be undone"}
 						],
 						actionButtons:[
 							{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
 							{content:"Delete", classes:"onyx-negative", ontap:"deleteDocuments"}
-					]},
-				]},
-			]},
+					]}
+				]}
+			]}
 		]},
-		{name:"selection", kind:"Selection", onSelect:"rerenderDocument", onDeselect:"rerenderDocument", onChange:"selectionChanged"},
+		{name:"selection", kind:"Selection", onSelect:"rerenderDocument", onDeselect:"rerenderDocument", onChange:"selectionChanged"}
 	],
 	statics:{
 		sortFunctions:sortFunctions
@@ -144,6 +144,7 @@ enyo.kind({
 		default:
 			if(sender.xhrResponse)
 				this.gotError(JSON.parse(sender.xhrResponse.body));
+			break;
 		}
 	},
 	gotError:function(response) {
@@ -153,7 +154,7 @@ enyo.kind({
 		var oldValue = this.documents;
 		if(docs != oldValue) {
 			this.documents = docs;
-			this.documentsChanged(oldValue,docs)
+			this.documentsChanged(oldValue,docs);
 		}
 	},
 	sortDocuments:function() {
@@ -173,7 +174,7 @@ enyo.kind({
 		for(var i in documents) {
 			var eType = documents[i]["@metadata"]["Raven-Entity-Name"];
 			if(eType && this.entityTypes.indexOf(eType) == -1)
-				this.entityTypes.push(eType)
+				this.entityTypes.push(eType);
 		}
 		this.entityTypes.sort();
 	},
@@ -217,7 +218,7 @@ enyo.kind({
 		var eType = doc["@metadata"]["Raven-Entity-Name"];
 
 		if(eType && this.entityTypes.length) {
-			var eHue = 360*this.entityTypes.indexOf(eType)/this.entityTypes.length
+			var eHue = 360*this.entityTypes.indexOf(eType)/this.entityTypes.length;
 			this.$.item.applyStyle("border-left","0.5ex solid hsl("+eHue+",50%,50%)");
 		}
 		else
@@ -236,7 +237,7 @@ enyo.kind({
 			this.$.divider.setShowing(!docs[event.index-1] || doc["@metadata"]["Raven-Entity-Name"] != docs[event.index-1]["@metadata"]["Raven-Entity-Name"]);
 			if(this.entityTypes.length) {
 				if(eType) {
-					var eHue = 360*this.entityTypes.indexOf(eType)/this.entityTypes.length
+					var eHue = 360*this.entityTypes.indexOf(eType)/this.entityTypes.length;
 					this.$.divider.applyStyle("background-image","linear-gradient(90deg, hsl("+eHue+",50%,50%) 0%, #EAEAEA 100%)");
 					this.$.divider.applyStyle("color","black");
 				}
@@ -258,6 +259,7 @@ enyo.kind({
 			break;
 		default:
 			this.$.divider.setShowing(false);
+			break;
 		}
 	},
 	pickDocument:function(sender,event) {
@@ -272,7 +274,7 @@ enyo.kind({
 		this.$.selection.setMulti(event.ctrlKey || event.shiftKey);
 		if(!event.shiftKey)
 		{
-			this._lastSelected = event.index
+			this._lastSelected = event.index;
 			this.$.selection.toggle(event.index);
 		}
 		else
@@ -314,6 +316,5 @@ enyo.kind({
 	},
 	closeDeletePopup:function() {
 		this.$.deletePopup.hide();
-
-	},
+	}
 });
