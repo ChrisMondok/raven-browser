@@ -25,6 +25,11 @@
 	width:360px;
 }
 
+.onyx-contextual-popup-title {
+	text-transform: uppercase;
+	font-size:1.15em;
+}
+
 .key-value-pair {
 	width:100%;
 	box-sizing:border-box;

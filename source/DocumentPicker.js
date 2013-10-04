@@ -53,7 +53,7 @@ enyo.kind({
 		]},
 		{name:"documentList", kind:"List", noSelect:true, attributes:{tabIndex:0}, fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", content:"Divider"},
-			{kind:"onyx.Item", ontap:"pickDocument", components:[
+			{name:"item", kind:"onyx.Item", ontap:"pickDocument", components:[
 				{name:"documentId"},
 			]},
 		]},
@@ -97,6 +97,7 @@ enyo.kind({
 
 		if(self.$.documentList.hasNode()) {
 			self.$.documentList.node.addEventListener('keydown', function(event) {
+				var newSelection;
 				switch (event.key) {
 					case "Esc":
 						self.clearSelection();
@@ -105,22 +106,28 @@ enyo.kind({
 						var selected = Object.keys(self.$.selection.getSelected());
 						if(selected.length) {
 							var last = selected.reduce(function(l,r){return (l > r ? l : r);});
-							self.clearSelection();
-							self.$.selection.select(Number(last) + 1);
+							newSelection = Number(last) + 1;
+							if(newSelection < self.$.documentList.getCount()) {
+								self.clearSelection();
+								self.$.selection.select(newSelection);
+							}
 							event.preventDefault();
 						}
 						break;
 					case "Up":
 						var selected = Object.keys(self.$.selection.getSelected());
 						if(selected.length) {
-							var first = selected.reduce(function(l,r){return (l > r ? l : r);});
-							self.clearSelection();
-							self.$.selection.select(Number(first) - 1);
+							var first = selected.reduce(function(l,r){return (l < r ? l : r);});
+							newSelection = Number(first) - 1;
+							if(newSelection >= 0) {
+								self.clearSelection();
+								self.$.selection.select(newSelection);
+							}
 							event.preventDefault();
 						}
 						break;
 					case "Delete":
-						self.$.deleteButton.setActive(true);
+						self.$.deleteButton.setActive(!self.$.deleteButton.getDisabled());
 						break;
 					default:
 						console.info(event.key);
