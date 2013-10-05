@@ -18,6 +18,7 @@ enyo.kind({
 	},
 	components:[
 		{style:"position:relative; z-index:1", fit:true, components:[
+			{kind:"DragImage", style:"position:absolute; top:0; right:0", onDragStart:"handleDocumentDragStart"},
 			{name:"documentBodyInput", style:"height:100%; width:100%", kind:"onyx.TextArea"},
 			{
 				name:"metaSlider",
@@ -151,5 +152,11 @@ enyo.kind({
 			this.$.metaSlider.animateToMin();
 		else
 			this.$.metaSlider.animateToMax();
+	},
+	handleDocumentDragStart:function(sender,event) {
+		event.dataTransfer.effectAllowed = "all";
+		event.dataTransfer.setData("Text",this.$.documentBodyInput.getValue());
+		event.dataTransfer.setData("application/json",this.$.documentBodyInput.getValue());
+		console.info('handle document drag start');
 	},
 });

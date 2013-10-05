@@ -193,3 +193,8 @@ textarea {
 {
 	display:inline-block;
 }
+
+.drag-image.dragging
+{
+	opacity:0.5;
+}

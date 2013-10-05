@@ -10,5 +10,6 @@ enyo.depends(
 	"Settings.js",
 	"Toast.js",
 	"RavenAPI.js",
-	"BatchLoader.js"
+	"BatchLoader.js",
+	"DragImage.js"
 );
