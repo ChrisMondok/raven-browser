@@ -53,7 +53,7 @@ enyo.kind({
 		]},
 		{name:"documentList", kind:"List", noSelect:true, attributes:{tabIndex:0}, fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", content:"Divider"},
-			{name:"item", kind:"onyx.Item", ontap:"pickDocument", components:[
+			{name:"item", kind:"onyx.Item", ontap:"pickDocument", oncontextmenu:"showContextMenu", components:[
 				{name:"documentId"},
 			]},
 		]},
@@ -77,10 +77,19 @@ enyo.kind({
 				]}
 			]}
 		]},
+		{name:"contextMenu", kind:"onyx.Menu", components:[
+			{content:"Copy"},
+			{content:"Move"},
+			{content:"Delete"}
+		]},
 		{name:"selection", kind:"Selection", onSelect:"updateDocumentSelectedState", onDeselect:"updateDocumentSelectedState", onChange:"selectionChanged"}
 	],
 	statics:{
 		sortFunctions:sortFunctions
+	},
+	showContextMenu:function(component, event) {
+		this.$.contextMenu.showAtEvent(event);
+		event.preventDefault();
 	},
 	create:function() {
 		this.inherited(arguments);
