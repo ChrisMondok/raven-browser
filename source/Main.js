@@ -1,5 +1,5 @@
 enyo.kind({
-	name: "RavenBrowser",
+	name: "RavenBrowser.Main",
 	kind: "FittableRows",
 	fit: true,
 	published:{

@@ -1,5 +1,5 @@
 enyo.kind({
-	name:"RavenBrowser.ContextMenu",
+	name:"RavenBrowser.Widgets.ContextMenu",
 	kind:"onyx.Menu",
 
 	adjustPosition:function(){},
