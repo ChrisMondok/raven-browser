@@ -30,7 +30,6 @@ var sortFunctions = {
 
 enyo.kind({
 	name:"RavenBrowser.DocumentPicker",
-	kind:"FittableRows",
 	classes:"onyx",
 	published:{
 		tenantId:null,
@@ -46,41 +45,44 @@ enyo.kind({
 	},
 	loader:null,
 	components:[
-		{kind:"onyx.Toolbar", components:[
-			{kind:"onyx.InputDecorator", style:"display:block", components:[
-				{name:"filterInput", kind:"onyx.Input", onchange:"applyFilter", placeholder:"Filter", type:"search", classes:"max-width"}
-			]}
-		]},
-		{name:"documentList", kind:"List", noSelect:true, attributes:{tabIndex:0}, fit:true, onSetupItem:"renderDocument", components:[
-			{name:"divider", showing:false, classes:"divider", content:"Divider"},
-			{name:"item", kind:"onyx.Item", ontap:"pickDocument", oncontextmenu:"showContextMenu", components:[
-				{name:"documentId"},
+		{kind:"FittableRows", classes:"enyo-fit", components:[
+			{kind:"onyx.Toolbar", components:[
+				{kind:"onyx.InputDecorator", style:"display:block", components:[
+					{name:"filterInput", kind:"onyx.Input", onchange:"applyFilter", placeholder:"Filter", type:"search", classes:"max-width"}
+				]}
 			]},
-		]},
-		{name:"loadingDrawer", kind:"onyx.Drawer", classes:"footer-drawer", components:[
-			{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"Select a tenant"},
-			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true}
-		]},
-		{kind:"onyx.Toolbar", components:[
-			{kind:"FittableColumns", classes:"max-width", components:[
-				{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"loadDocuments"},
-				{kind:"onyx.MenuDecorator", components:[
-					{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
-					{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
-						components:[
-							{content:"This cannot be undone"}
-						],
-						actionButtons:[
-							{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
-							{content:"Delete", classes:"onyx-negative", ontap:"deleteDocuments"}
+			{name:"documentList", kind:"List", noSelect:true, attributes:{tabIndex:0}, fit:true, onSetupItem:"renderDocument", components:[
+				{name:"divider", showing:false, classes:"divider", content:"Divider"},
+				{name:"item", kind:"onyx.Item", ontap:"pickDocument", oncontextmenu:"showContextMenu", components:[
+					{name:"documentId"}
+				]}
+			]},
+			{name:"loadingDrawer", kind:"onyx.Drawer", classes:"footer-drawer", components:[
+				{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"Select a tenant"},
+				{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true}
+			]},
+			{kind:"onyx.Toolbar", components:[
+				{kind:"FittableColumns", classes:"max-width", components:[
+					{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"loadDocuments"},
+					{kind:"onyx.MenuDecorator", components:[
+						{name:"deleteButton", kind:"onyx.Button", content:"Delete", disabled:true},
+						{name:"deletePopup", kind:"onyx.ContextualPopup", title:"Confirm delete", floating:true,
+							components:[
+								{content:"This cannot be undone"}
+							],
+							actionButtons:[
+								{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
+								{content:"Delete", classes:"onyx-negative", ontap:"deleteDocuments"}
+						]}
 					]}
 				]}
 			]}
 		]},
-		{name:"contextMenu", kind:"onyx.Menu", components:[
-			{content:"Copy"},
-			{content:"Move"},
-			{content:"Delete"}
+		{name:"destinationDialog", kind:"RavenBrowser.DestinationDialog"},
+		{name:"contextMenu", kind:"RavenBrowser.ContextMenu", onSelect:"contextMenuItemSelected", floating:true, components:[
+			{content:$L("Copy")},
+			{content:$L("Move")},
+			{content:$L("Delete")}
 		]},
 		{name:"selection", kind:"Selection", onSelect:"updateDocumentSelectedState", onDeselect:"updateDocumentSelectedState", onChange:"selectionChanged"}
 	],
@@ -88,8 +90,24 @@ enyo.kind({
 		sortFunctions:sortFunctions
 	},
 	showContextMenu:function(component, event) {
+		this.pickDocument(component, event);
 		this.$.contextMenu.showAtEvent(event);
 		event.preventDefault();
+	},
+	contextMenuItemSelected:function(menu, selected) {
+		switch(selected.content) {
+			case $L("Copy"):
+				this.$.destinationDialog.setActionName("Copy");
+				this.$.destinationDialog.setShowing(true);
+			break;
+			case $L("Move"):
+				this.$.destinationDialog.setActionName("Move");
+				this.$.destinationDialog.setShowing(true);
+			break;
+			case $L("Delete"):
+				this.$.deleteButton.setActive(true);
+			break;
+		}
 	},
 	create:function() {
 		this.inherited(arguments);
@@ -151,7 +169,7 @@ enyo.kind({
 		for(var s in selection) {
 			this.$.selection.deselect(s);
 		}
-	},
+  },
 
 	tenantIdChanged:function(){
 		this.clearSelection();
@@ -348,7 +366,7 @@ enyo.kind({
 		if(this.$.selection.isSelected(event.key)) {
 			this.doDocumentSelected({documentId:this.getFilteredDocuments()[event.key].__document_id});
 		}
-		
+
 		this.$.documentList.renderRow(event.key);
 	},
 

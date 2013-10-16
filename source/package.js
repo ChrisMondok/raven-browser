@@ -9,6 +9,8 @@ enyo.depends(
 	"TenantPicker.js",
 	"Settings.js",
 	"Toast.js",
+	"DestinationDialog.js",
+	"ContextMenu.js",
 	"RavenAPI.js",
 	"BatchLoader.js"
 );

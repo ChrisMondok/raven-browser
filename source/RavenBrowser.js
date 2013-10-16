@@ -72,7 +72,7 @@ enyo.kind({
 			this.$.slidingPanels.setIndex(1);
 	},
 	selectDocument:function(sender,event) {
-		var selectedDocument = event.documentId;
+    var selectedDocument = event.documentId;
 		this.$.documentViewer.setDocumentId(selectedDocument);
 		if(selectedDocument)
 		{
@@ -126,3 +126,4 @@ enyo.kind({
 	}
 });
 
+

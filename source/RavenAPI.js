@@ -19,6 +19,9 @@ enyo.kind({
 		return new enyo.Ajax({url:this.getRavenUrl()+"databases/"+tenantId+"/silverlight/ensureStartup"})
 			.go();
 	},
+	buildDocumentUrl:function(tenantId, documentId) {
+		return this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId;
+	},
 	getDocuments:function(tenantId) {
 		return new RavenBrowser.BatchLoader({
 			url:this.getRavenUrl()+"databases/"+tenantId+"/indexes/Raven/DocumentsByEntityName",
@@ -63,7 +66,7 @@ enyo.kind({
 
 		return new enyo.Ajax({
 			method:"PUT",
-			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
+			url:this.buildDocumentUrl(tenantId,documentId),
 			contentType:"application/json",
 			cacheBust:false,
 			postBody:value,
@@ -73,9 +76,15 @@ enyo.kind({
 	deleteDocument:function(tenantId, documentId) {
 		return new enyo.Ajax({
 			method:"DELETE",
-			url:this.getRavenUrl()+"databases/"+tenantId+"/docs/"+documentId,
+			url:this.buildDocumentUrl(tenantId,documentId),
 			cacheBust:false,
 		}).go();
+	},
+	moveDocument:function(fromTenant, fromDocumentId, toTenant, toDocumentId) {
+		this.loadDocument(fromTenant, fromDocumentId)
+			.response(this,function(request, document) {
+				debugger;
+			});
 	},
 	getRavenUrl:function() {
 		return [
