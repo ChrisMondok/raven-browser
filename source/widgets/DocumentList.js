@@ -42,7 +42,9 @@ enyo.kind({
 	},
 
 	events:{
-		onDocumentSelected:""
+		onDocumentSelected:"",
+		onDocumentContextMenu:"",
+		onSelectionChanged:""
 	},
 
 	entityTypes:null,
@@ -54,7 +56,7 @@ enyo.kind({
 	components:[
 		{name:"list", kind:"List", noSelect:true, attributes:{tabIndex:0}, fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", content:"Divider"},
-			{name:"item", kind:"onyx.Item", ontap:"pickDocument", oncontextmenu:"showContextMenu", components:[
+			{name:"item", kind:"onyx.Item", ontap:"pickDocument", oncontextmenu:"contextMenu", components:[
 				{name:"documentId"}
 			]}
 		]},
@@ -72,6 +74,11 @@ enyo.kind({
 		this.setDocuments([]);
 	},
 
+	contextMenu:function(sender, event) {
+		this.pickDocument(sender,event);
+		this.doDocumentContextMenu(event);
+	},
+
 	setDocuments:function(docs) {
 		var oldValue = this.documents;
 		if(docs != oldValue) {
@@ -81,49 +88,55 @@ enyo.kind({
 	},
 
 	rendered:function() {
-		this.inherited(arguments),
-			self = this;
+		this.inherited(arguments);
+		this.setUpKeyboardListener();
+	},
 
-		if(self.$.list.hasNode()) {
-			self.$.list.node.addEventListener('keydown', function(event) {
-				var newSelection;
-				switch (event.key) {
-					case "Esc":
-						self.clearSelection();
-						break;
-					case "Down":
-						var selected = Object.keys(self.$.selection.getSelected());
-						if(selected.length) {
-							var last = selected.reduce(function(l,r){return (l > r ? l : r);});
-							newSelection = Number(last) + 1;
-							if(newSelection < self.$.list.getCount()) {
-								self.clearSelection();
-								self.$.selection.select(newSelection);
-							}
-							event.preventDefault();
-						}
-						break;
-					case "Up":
-						var selected = Object.keys(self.$.selection.getSelected());
-						if(selected.length) {
-							var first = selected.reduce(function(l,r){return (l < r ? l : r);});
-							newSelection = Number(first) - 1;
-							if(newSelection >= 0) {
-								self.clearSelection();
-								self.$.selection.select(newSelection);
-							}
-							event.preventDefault();
-						}
-						break;
-					case "Delete":
-						self.$.deleteButton.setActive(!self.$.deleteButton.getDisabled());
-						break;
-					default:
-						console.info(event.key);
-						break;
-				}
-			});
+	setUpKeyboardListener:function() {
+		if(this.$.list.hasNode()) {
+			this.$.list.node.addEventListener('keydown', enyo.bind(this,"keyboardListener"));
 		}
+	},
+
+	keyboardListener:function(event) {
+		var self = this,
+			newSelection;
+			handled = true;
+		switch (event.key) {
+			case "Esc":
+				self.clearSelection();
+				break;
+			case "Down":
+				var selected = Object.keys(self.$.selection.getSelected());
+				if(selected.length) {
+					var last = selected.reduce(function(l,r){return (l > r ? l : r);});
+					newSelection = Number(last) + 1;
+					if(newSelection < self.$.list.getCount()) {
+						self.clearSelection();
+						self.$.selection.select(newSelection);
+					}
+				} else
+					handled = false;
+				break;
+			case "Up":
+				var selected = Object.keys(self.$.selection.getSelected());
+				if(selected.length) {
+					var first = selected.reduce(function(l,r){return (l < r ? l : r);});
+					newSelection = Number(first) - 1;
+					if(newSelection >= 0) {
+						self.clearSelection();
+						self.$.selection.select(newSelection);
+					}
+				} else
+					handled = false;
+				break;
+			default:
+				handled = false;
+				break;
+		}
+
+		if(handled)
+			event.preventDefault();
 	},
 
 	pickDocument:function(sender,event) {
@@ -148,7 +161,6 @@ enyo.kind({
 				this.$.selection.setByKey(i,true);
 		}
 	},
-
 
 	tenantIdChanged:function(old, tenantId){
 		this.clearSelection();
@@ -346,5 +358,9 @@ enyo.kind({
 		}
 
 		this.$.list.renderRow(event.key);
+	},
+
+	selectionChanged:function(selection, event) {
+		this.doSelectionChanged({selected:Object.keys(selection.getSelected())});
 	}
 });

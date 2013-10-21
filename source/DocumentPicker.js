@@ -9,15 +9,18 @@ enyo.kind({
 		onErrorReceived:"",
 		onDocumentSelected:""
 	},
+	handlers:{
+		onDocumentContextMenu:"showContextMenu"
+	},
 	loader:null,
 	components:[
 		{kind:"FittableRows", classes:"enyo-fit", components:[
 			{kind:"onyx.Toolbar", components:[
 				{kind:"onyx.InputDecorator", style:"display:block", components:[
-					{name:"filterInput", kind:"onyx.Input", onchange:"applyFilter", placeholder:"Filter", type:"search", classes:"max-width"}
+					{name:"filterInput", kind:"onyx.Input", oninput:"applyFilter", placeholder:"Filter", type:"search", classes:"max-width"}
 				]}
 			]},
-			{name:"documentList", kind:"RavenBrowser.DocumentList", fit:true},
+			{name:"documentList", kind:"RavenBrowser.DocumentList", onSelectionChanged:"updateDeleteButton", fit:true},
 			{kind:"onyx.Toolbar", components:[
 				{kind:"FittableColumns", classes:"max-width", components:[
 					{name:"reloadButton", kind:"onyx.Button", content:"Reload", ontap:"loadDocuments"},
@@ -75,6 +78,10 @@ enyo.kind({
 		this.$.documentList.setApi(api);
 	},
 
+	applyFilter:function(input, event) {
+		this.$.documentList.setFilterString(input.getValue());
+	},
+
 	tenantIdChanged:function(old,tenantId) {
 		this.$.documentList.setTenantId(tenantId);
 		this.$.reloadButton.setDisabled(!tenantId);
@@ -105,5 +112,9 @@ enyo.kind({
 
 	closeDeletePopup:function() {
 		this.$.deletePopup.hide();
+	},
+
+	updateDeleteButton:function(sender, event) {
+		this.$.deleteButton.setDisabled(!event.selected.length);
 	}
 });
