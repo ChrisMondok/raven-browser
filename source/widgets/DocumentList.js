@@ -68,8 +68,6 @@ enyo.kind({
 	],
 
 	create:function() {
-		window.LIST = this;
-
 		this.inherited(arguments);
 		this.setDocuments([]);
 	},
@@ -107,7 +105,7 @@ enyo.kind({
 				self.clearSelection();
 				break;
 			case "Down":
-				var selected = Object.keys(self.$.selection.getSelected());
+				var selected = this.getSelectedIndexes();
 				if(selected.length) {
 					var last = selected.reduce(function(l,r){return (l > r ? l : r);});
 					newSelection = Number(last) + 1;
@@ -119,7 +117,7 @@ enyo.kind({
 					handled = false;
 				break;
 			case "Up":
-				var selected = Object.keys(self.$.selection.getSelected());
+				var selected = this.getSelectedIndexes();
 				if(selected.length) {
 					var first = selected.reduce(function(l,r){return (l < r ? l : r);});
 					newSelection = Number(first) - 1;
@@ -277,15 +275,6 @@ enyo.kind({
 		this.$.list.refresh();
 	},
 
-	documentDeleted:function(sender,event,index) {
-		enyo.create({
-			kind:"onyx.Toast",
-			content:"Document deleted."
-		});
-		this.$.selection.deselect(index);
-		enyo.job("reload",enyo.bind(this,this.loadDocuments),1000);
-	},
-
 	clearSelection:function() {
 		var selection = this.$.selection.getSelected();
 		for(var s in selection) {
@@ -294,6 +283,7 @@ enyo.kind({
 	},
 
 	loadDocuments:function() {
+		this.clearSelection();
 		enyo.job.stop("closeLoadingDrawer");
 		this.setDocuments([]);
 		if(this.loader)
@@ -362,5 +352,13 @@ enyo.kind({
 
 	selectionChanged:function(selection, event) {
 		this.doSelectionChanged({selected:Object.keys(selection.getSelected())});
+	},
+
+	getSelectedIndexes:function() {
+		return Object.keys(this.$.selection.getSelected());
+	},
+
+	getSelectedDocuments:function() {
+		return this.getSelectedIndexes().map(function(index){return this.getFilteredDocuments()[index].__document_id;}, this );
 	}
 });

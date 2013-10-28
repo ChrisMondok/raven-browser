@@ -96,15 +96,25 @@ enyo.kind({
 	},
 
 	deleteDocuments:function(sender,event) {
-		throw "Not implemented.";
-		for(var key in this.$.selection.getSelected())
+		var selectedDocuments = this.$.documentList.getSelectedDocuments();
+		for(var i = 0; i < selectedDocuments.length; i++)
 		{
-			var id = this.getFilteredDocuments()[key].__document_id;
-			this.getApi().deleteDocument(this.getTenantId(), id)
-				.response(enyo.bind(this,"documentDeleted",sender,event,key))
+			var docId = selectedDocuments[i];
+			this.getApi().deleteDocument(this.getTenantId(), docId)
+				.response(enyo.bind(this,"documentDeleted",sender,event,docId))
 				.error(enyo.bind(this,"documentDeleteFailed"));
 		}
+		this.closeDeletePopup();
 	},
+
+	documentDeleted:function(sender, event, documentId) {
+		enyo.create({
+			kind:"onyx.Toast",
+			content:["Document", documentId,"deleted."].join(' ')
+		});
+		enyo.job("reload",enyo.bind(this,this.loadDocuments),1000);
+	},
+
 
 	documentDeleteFailed:function(sender,event) {
 		this.doErrorReceived({error:"Failed to delete document."});
