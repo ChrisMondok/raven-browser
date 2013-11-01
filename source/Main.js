@@ -19,7 +19,7 @@ enyo.kind({
 		onPageSizeChanged:"setPageSize",
 		onFetchDocumentCountChanged:"fetchDocumentCountChanged",
 		onSecureChanged:"secureChanged",
-		oncontextmenu:"contextMenu"
+		oncontextmenu:"contextMenu",
 	},
 	components:[
 		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
@@ -41,6 +41,7 @@ enyo.kind({
 		this.inherited(arguments);
 
 		enyo.dispatcher.listen(document,'contextmenu');
+		enyo.dispatcher.listen(document,'keydown');
 
 		var host = localStorage.getItem("raven-host") || "localhost";
 		var port = localStorage.getItem("raven-port") || 8080;

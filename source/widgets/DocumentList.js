@@ -47,6 +47,10 @@ enyo.kind({
 		onSelectionChanged:""
 	},
 
+	handlers:{
+		onkeydown:"keyboardListener"
+	},
+
 	entityTypes:null,
 
 	statics:{
@@ -66,9 +70,8 @@ enyo.kind({
 		]},
 		{name:"selection", kind:"Selection", onSelect:"updateDocumentSelectedState", onDeselect:"updateDocumentSelectedState", onChange:"selectionChanged"}
 	],
-
+	
 	create:function() {
-		this.inherited(arguments);
 		this.setDocuments([]);
 	},
 
@@ -85,56 +88,44 @@ enyo.kind({
 		}
 	},
 
-	rendered:function() {
-		this.inherited(arguments);
-		this.setUpKeyboardListener();
-	},
-
-	setUpKeyboardListener:function() {
-		if(this.$.list.hasNode()) {
-			this.$.list.node.addEventListener('keydown', enyo.bind(this,"keyboardListener"));
-		}
-	},
-
-	keyboardListener:function(event) {
+	keyboardListener:function(sender,keyboardEvent) {
 		var self = this,
-			newSelection;
-			handled = true;
-		switch (event.key) {
-			case "Esc":
+			newSelection,
+			handled = true,
+			selected = this.getSelectedIndexes();
+		switch (keyboardEvent.key) {
+		case "Esc":
+			if(selected.length) {
 				self.clearSelection();
-				break;
-			case "Down":
-				var selected = this.getSelectedIndexes();
-				if(selected.length) {
-					var last = selected.reduce(function(l,r){return (l > r ? l : r);});
-					newSelection = Number(last) + 1;
-					if(newSelection < self.$.list.getCount()) {
-						self.clearSelection();
-						self.$.selection.select(newSelection);
-					}
-				} else
-					handled = false;
-				break;
-			case "Up":
-				var selected = this.getSelectedIndexes();
-				if(selected.length) {
-					var first = selected.reduce(function(l,r){return (l < r ? l : r);});
-					newSelection = Number(first) - 1;
-					if(newSelection >= 0) {
-						self.clearSelection();
-						self.$.selection.select(newSelection);
-					}
-				} else
-					handled = false;
-				break;
-			default:
-				handled = false;
-				break;
+			}
+			break;
+		case "Down":
+			if(selected.length) {
+				var last = selected.reduce(function(l,r){return (l > r ? l : r);});
+				newSelection = Number(last) + 1;
+				if(newSelection < self.$.list.getCount()) {
+					self.clearSelection();
+					self.$.selection.select(newSelection);
+				}
+			}
+			break;
+		case "Up":
+			if(selected.length) {
+				var first = selected.reduce(function(l,r){return (l < r ? l : r);});
+				newSelection = Number(first) - 1;
+				if(newSelection >= 0) {
+					self.clearSelection();
+					self.$.selection.select(newSelection);
+				}
+			}
+			break;
+		default:
+			handled = false;
+			break;
 		}
-
 		if(handled)
-			event.preventDefault();
+			keyboardEvent.preventDefault();
+        return handled;
 	},
 
 	pickDocument:function(sender,event) {

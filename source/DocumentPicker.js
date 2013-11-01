@@ -3,14 +3,15 @@ enyo.kind({
 	classes:"onyx",
 	published:{
 		tenantId:null,
-		api:null,
+		api:null
 	},
 	events:{
 		onErrorReceived:"",
 		onDocumentSelected:""
 	},
 	handlers:{
-		onDocumentContextMenu:"showContextMenu"
+		onDocumentContextMenu:"showContextMenu",
+        onkeydown:"keydownHandler"
 	},
 	loader:null,
 	components:[
@@ -32,7 +33,7 @@ enyo.kind({
 							],
 							actionButtons:[
 								{content:"Cancel", classes:"onyx-dark", ontap:"closeDeletePopup"},
-								{content:"Delete", classes:"onyx-negative", ontap:"deleteDocuments"}
+								{name:"confirmDeleteButton", content:"Delete", classes:"onyx-negative", ontap:"deleteDocuments"}
 						]}
 					]}
 				]}
@@ -73,6 +74,16 @@ enyo.kind({
 				break;
 		}
 	},
+
+    keydownHandler: function(sender, keyboardEvent)
+    {
+		switch (keyboardEvent.key) {
+		case "Delete":
+			this.$.deleteButton.setActive(true);
+            keyboardEvent.preventDefault();
+            return true;
+        }
+    },
 
 	apiChanged:function(old, api) {
 		this.$.documentList.setApi(api);
