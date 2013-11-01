@@ -72,6 +72,7 @@ enyo.kind({
 	],
 	
 	create:function() {
+        this.inherited(arguments);
 		this.setDocuments([]);
 	},
 
