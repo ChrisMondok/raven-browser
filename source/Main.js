@@ -22,8 +22,14 @@ enyo.kind({
 		oncontextmenu:"contextMenu",
 	},
 	components:[
-		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
-			{name:"tenantPicker", kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
+		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", draggable:false, arrangerKind:"CollapsingArranger", components:[
+            {kind:"FittableRows", classes:"panel", components:[
+                {name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
+                {kind:"onyx.Toolbar", components:[
+                    {kind:"onyx.Button", content:"Reload"},
+                    {kind:"onyx.Button", content:"Settings", ontap:"showSettings"}
+                ]}
+            ]},
 			{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
 			{kind:"RavenBrowser.DocumentViewer", classes:"panel"},
 		]},

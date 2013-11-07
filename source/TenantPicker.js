@@ -4,7 +4,6 @@ enyo.kind({
 	classes:"onyx onyx-dark",
 	events:{
 		onTenantSelected:"",
-		onShowSettings:"",
 		onErrorReceived:""
 	},
 	published:{
@@ -18,11 +17,7 @@ enyo.kind({
 				{name:"tenantName"},
 				{name:"documentCount", style:"float:right", classes:"label"}
 			]},
-		]},
-		{kind:"onyx.Toolbar", components:[
-			{kind:"onyx.Button", content:"Reload", ontap:"loadTenants"},
-			{kind:"onyx.Button", content:"Settings", ontap:"doShowSettings"}
-		]},
+		]}
 	],
 	apiChanged:function() {
 		this.loadTenants();
