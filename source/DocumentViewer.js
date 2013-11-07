@@ -10,7 +10,8 @@ enyo.kind({
 	},
 	handlers:{
 		onSaveDocument:"saveDocument",
-		onDocumentSaved:"showSavedMessage"
+		onDocumentSaved:"showSavedMessage",
+        onkeydown:"keydownHandler"
 	},
 	events:{
 		onErrorReceived:"",
@@ -77,6 +78,15 @@ enyo.kind({
 		this.$.entityNameInput.setValue(eName || "");
 		this.$.clrTypeInput.setValue(clrType || "");
 	},
+    keydownHandler: function(sender, keyboardEvent)
+    {
+        if(keyboardEvent.ctrlKey && keyboardEvent.which == 83 && !this.$.saveButton.getDisabled())
+        {
+            this.saveDocument();
+            keyboardEvent.preventDefault();
+        }
+
+    },
 	gotError:function(sender,error) {
 		if(error.error)
 			this.doErrorReceived(error);
