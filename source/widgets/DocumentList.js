@@ -59,7 +59,7 @@ enyo.kind({
 
 	components:[
 		{name:"list", kind:"List", noSelect:true, attributes:{tabIndex:0}, fit:true, onSetupItem:"renderDocument", components:[
-			{name:"divider", showing:false, classes:"divider", content:"Divider"},
+			{name:"divider", showing:false, classes:"divider", ontap:"pickCollection", content:"Divider"},
 			{name:"item", kind:"onyx.Item", ontap:"pickDocument", oncontextmenu:"contextMenu", components:[
 				{name:"documentId"}
 			]}
@@ -72,7 +72,7 @@ enyo.kind({
 	],
 	
 	create:function() {
-        this.inherited(arguments);
+		this.inherited(arguments);
 		this.setDocuments([]);
 	},
 
@@ -126,15 +126,13 @@ enyo.kind({
 		}
 		if(handled)
 			keyboardEvent.preventDefault();
-        return handled;
+		return handled;
 	},
 
 	pickDocument:function(sender,event) {
 
 		if(this.$.selection.getMulti() && !(event.ctrlKey || event.shiftKey)) {
-			var keys = this.$.selection.getSelected();
-			for(var key in keys)
-				this.$.selection.deselect(key);
+			this.clearSelection();
 		}
 
 		this.$.selection.setMulti(event.ctrlKey || event.shiftKey);
@@ -149,6 +147,26 @@ enyo.kind({
 			var end = Math.max(event.index,this._lastSelected);
 			for(var i = start; i <= end; i++)
 				this.$.selection.setByKey(i,true);
+		}
+	},
+
+	pickCollection:function(sender, event) {
+		switch(this.getSortFunction())
+		{
+		case sortFunctions["Entity Type"]:
+			var entity = this.getFilteredDocuments()[event.index],
+				entityType = entity["@metadata"]["Raven-Entity-Name"],
+				indexes = [],
+				docs = this.getFilteredDocuments();
+
+			this.clearSelection();
+			this.$.selection.setMulti(true);
+			for(var i = 0; i < docs.length; i++)
+			{
+				if(docs[i]["@metadata"]["Raven-Entity-Name"] == entityType)
+					this.$.selection.select(i);
+			}
+			break;
 		}
 	},
 
@@ -334,12 +352,14 @@ enyo.kind({
 		this.applyFilter();
 	},
 
-	updateDocumentSelectedState:function(sender,event) {
-		if(this.$.selection.isSelected(event.key)) {
-			this.doDocumentSelected({documentId:this.getFilteredDocuments()[event.key].__document_id});
+	updateDocumentSelectedState:function(sender,ev) {
+		if(this.$.selection.isSelected(ev.key)) {
+			this.startJob('doDocumentSelected', enyo.bind(this,function() {
+				this.doDocumentSelected({documentId:this.getFilteredDocuments()[ev.key].__document_id});
+			}),10);
 		}
 
-		this.$.list.renderRow(event.key);
+		this.$.list.renderRow(ev.key);
 	},
 
 	selectionChanged:function(selection, event) {

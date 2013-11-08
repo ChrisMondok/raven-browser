@@ -11,7 +11,7 @@ enyo.kind({
 	},
 	handlers:{
 		onDocumentContextMenu:"showContextMenu",
-        onkeydown:"keydownHandler"
+		onkeydown:"keydownHandler"
 	},
 	loader:null,
 	components:[
@@ -75,15 +75,15 @@ enyo.kind({
 		}
 	},
 
-    keydownHandler: function(sender, keyboardEvent)
-    {
+	keydownHandler: function(sender, keyboardEvent)
+	{
 		switch (keyboardEvent.key) {
 		case "Delete":
 			this.$.deleteButton.setActive(true);
-            keyboardEvent.preventDefault();
-            return true;
-        }
-    },
+			keyboardEvent.preventDefault();
+			return true;
+		}
+	},
 
 	apiChanged:function(old, api) {
 		this.$.documentList.setApi(api);
