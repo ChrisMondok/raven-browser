@@ -23,13 +23,13 @@ enyo.kind({
 	},
 	components:[
 		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", draggable:false, arrangerKind:"CollapsingArranger", components:[
-            {kind:"FittableRows", classes:"panel", components:[
-                {name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
-                {kind:"onyx.Toolbar", components:[
-                    {kind:"onyx.Button", content:"Reload"},
-                    {kind:"onyx.Button", content:"Settings", ontap:"showSettings"}
-                ]}
-            ]},
+			{kind:"FittableRows", classes:"panel", components:[
+				{name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
+				{kind:"onyx.Toolbar", components:[
+					{kind:"onyx.Button", content:"Reload", ontap:"reloadTenants"},
+					{kind:"onyx.Button", content:"Settings", ontap:"showSettings"}
+				]}
+			]},
 			{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
 			{kind:"RavenBrowser.DocumentViewer", classes:"panel"},
 		]},
@@ -70,6 +70,9 @@ enyo.kind({
 
 		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port, pageSize:pageSize, secure:secure}));
 	},
+	reloadTenants:function() {
+		this.$.tenantPicker.loadTenants();
+	},
 	selectTenant:function(sender,event) {
 		var tenant = event.tenant;
 		this.$.documentPicker.setTenantId(tenant);
@@ -79,7 +82,7 @@ enyo.kind({
 			this.$.slidingPanels.setIndex(1);
 	},
 	selectDocument:function(sender,event) {
-    var selectedDocument = event.documentId;
+	var selectedDocument = event.documentId;
 		this.$.documentViewer.setDocumentId(selectedDocument);
 		if(selectedDocument)
 		{
@@ -132,5 +135,3 @@ enyo.kind({
 		localStorage.setItem('secure',event.secure);
 	}
 });
-
-
