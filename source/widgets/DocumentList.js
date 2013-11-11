@@ -58,6 +58,7 @@ enyo.kind({
 	},
 
 	components:[
+		{name:"emptyListPlaceholder", kind:"onyx.Item", content:"No documents", classes:"engraved centered", style:"position:absolute; top:0px; left:0px; width:100%;"},
 		{name:"list", kind:"List", noSelect:true, attributes:{tabIndex:0}, fit:true, onSetupItem:"renderDocument", components:[
 			{name:"divider", showing:false, classes:"divider", ontap:"pickCollection", content:"Divider"},
 			{name:"item", kind:"onyx.Item", ontap:"pickDocument", oncontextmenu:"contextMenu", components:[
@@ -279,9 +280,10 @@ enyo.kind({
 	},
 
 	filteredDocumentsChanged:function() {
-		var filterString = this.getFilterString();
 		var documents = this.getFilteredDocuments();
-		this.$.list.setCount(documents?documents.length:0);
+		var num = documents ? documents.length : 0;
+		this.$.list.setCount(num);
+		this.$.emptyListPlaceholder.setShowing(!num);
 		this.$.list.refresh();
 	},
 
