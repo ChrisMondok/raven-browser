@@ -89,7 +89,7 @@ enyo.kind({
 		}
 	},
 	showError:function(sender,event) {
-        enyo.create({kind:"onyx.Toast", content:event.error});
+		enyo.create({kind:"onyx.Toast", content:event.error});
 	},
 	showSettings:function(event) {
 		this.$.settingsPopup.show();
