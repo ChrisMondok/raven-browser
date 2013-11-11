@@ -299,7 +299,6 @@ enyo.kind({
 	loadDocuments:function() {
 		this.clearSelection();
 		enyo.job.stop("closeLoadingDrawer");
-		this.setDocuments([]);
 		if(this.loader)
 			this.loader.abort();
 
