@@ -33,7 +33,7 @@ enyo.kind({
 			{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
 			{kind:"RavenBrowser.DocumentViewer", classes:"panel"}
 		]},
-		{name:"settingsPopup", classes:"max-width-column onyx-light", style:"width:320px", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
+		{name:"settingsPopup", classes:"onyx-light", style:"max-width:100%; min-width:300px;", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
 			{kind:"Scroller", style:"max-height:360px", components:[
 				{name:"settings", kind:"RavenBrowser.Settings"}
 			]},

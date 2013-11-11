@@ -14,7 +14,6 @@ enyo.kind({
 		onFetchDocumentCountChanged:"",
 		onSecureChanged:""
 	},
-	controlClasses:"nice-margin",
 	components:[
 		{kind:"onyx.Groupbox", components:[
 			{kind:"onyx.GroupboxHeader", content:"Raven server"},
@@ -37,7 +36,7 @@ enyo.kind({
 				]},
 			]},
 		]},
-		{kind:"onyx.Groupbox", components:[
+		{kind:"onyx.Groupbox", style:"margin-top:1em; margin-bottom:1em", components:[
 			{kind:"onyx.GroupboxHeader", content:"Document Picker"},
 			{classes:"picker-row", components:[
 				{content:"Sort", classes:"label picker-label"},
