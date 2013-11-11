@@ -4,11 +4,9 @@ enyo.kind({
 	classes:"onyx-toast",
 	floating:true,
 	centered:true,
+    autoDismiss:false,
 	published:{
-		lifetime:5000,
-	},
-	handlers:{
-		ontap:"destroy",
+		lifetime:2000
 	},
 
 	statics:{
