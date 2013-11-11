@@ -37,10 +37,7 @@ enyo.kind({
 			{kind:"Scroller", style:"max-height:360px", components:[
 				{name:"settings", kind:"RavenBrowser.Settings"}
 			]},
-			{kind:"onyx.Button", classes:"max-width onyx-dark", style:"margin-top:1em", content:"Close", ontap:"hideSettings"}
-		]},
-		{name:"infoPopup", ontap:"hideInfoPopup", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
-			{name:"infoPopupContent", content:"Info popup"}
+			{kind:"onyx.Button", classes:"max-width onyx-dark", content:"Close", ontap:"hideSettings"}
 		]}
 	],
 	create:function() {
@@ -92,11 +89,7 @@ enyo.kind({
 		}
 	},
 	showError:function(sender,event) {
-		this.$.infoPopupContent.setContent(event.error);
-		this.$.infoPopup.show();
-	},
-	hideInfoPopup:function(sender,event) {
-		this.$.infoPopup.hide();
+        enyo.create({kind:"onyx.Toast", content:event.error});
 	},
 	showSettings:function(event) {
 		this.$.settingsPopup.show();
