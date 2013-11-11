@@ -19,14 +19,14 @@ var sortFunctions = {
 		},
 	"Document ID": function(a,b) {
 		if(a.__document_id < b.__document_id)
-			return -1
+			return -1;
 		else
 			if(a.__document_id > b.__document_id)
-				return 1
-		return 0
+				return 1;
+		return 0;
 	},
 	"unsorted":null
-}
+};
 
 enyo.kind({
 	name:"RavenBrowser.DocumentList",
@@ -167,6 +167,8 @@ enyo.kind({
 				if(docs[i]["@metadata"]["Raven-Entity-Name"] == entityType)
 					this.$.selection.select(i);
 			}
+			break;
+		default:
 			break;
 		}
 	},

@@ -48,7 +48,7 @@ enyo.kind({
 	],
 
 	setSortFunction:function(sortFunction) {
-		this.$.documentList.setSortFunction(sortFunction)
+		this.$.documentList.setSortFunction(sortFunction);
 	},
 
 	showContextMenu:function(component, event) {
@@ -82,6 +82,8 @@ enyo.kind({
 			this.$.deleteButton.setActive(true);
 			keyboardEvent.preventDefault();
 			return true;
+		default:
+			break;
 		}
 	},
 
@@ -107,7 +109,7 @@ enyo.kind({
 	},
 
 	deleteDocuments:function(sender,event) {
-		var selectedDocuments = this.$.documentList.getSelectedDocuments()
+		var selectedDocuments = this.$.documentList.getSelectedDocuments(),
 			tenantId = this.getTenantId(),
 			request = null;
 
@@ -116,7 +118,7 @@ enyo.kind({
 			request = this.getApi().deleteDocument(this.getTenantId(), selectedDocuments[0])
 				.response(function() {
 					enyo.create({kind:"onyx.Toast",content:"Deleted "+selectedDocuments[0]});
-				})
+				});
 		}
 		else
 		{
