@@ -107,28 +107,33 @@ enyo.kind({
 	},
 
 	deleteDocuments:function(sender,event) {
-		var selectedDocuments = this.$.documentList.getSelectedDocuments();
-		for(var i = 0; i < selectedDocuments.length; i++)
+		var selectedDocuments = this.$.documentList.getSelectedDocuments()
+			tenantId = this.getTenantId(),
+			request = null;
+
+		if(selectedDocuments.length == 1)
 		{
-			var docId = selectedDocuments[i];
-			this.getApi().deleteDocument(this.getTenantId(), docId)
-				.response(enyo.bind(this,"documentDeleted",sender,event,docId))
-				.error(enyo.bind(this,"documentDeleteFailed"));
+			request = this.getApi().deleteDocument(this.getTenantId(), selectedDocuments[0])
+				.response(function() {
+					enyo.create({kind:"onyx.Toast",content:"Deleted "+selectedDocuments[0]});
+				})
 		}
+		else
+		{
+			request = this.getApi().bulkDeleteDocuments(tenantId, selectedDocuments)
+				.response(function() {
+					enyo.create({kind:"onyx.Toast", content:"Deleted "+selectedDocuments.length+" documents"});
+				});
+		}
+
+		request.response(this.startJob("reload","loadDocuments",1000));
+		request.error(enyo.bind(this,"documentDeleteFailed"));
+
 		this.closeDeletePopup();
 	},
 
-	documentDeleted:function(sender, event, documentId) {
-		enyo.create({
-			kind:"onyx.Toast",
-			content:["Document", documentId,"deleted."].join(' ')
-		});
-		enyo.job("reload",enyo.bind(this,this.loadDocuments),1000);
-	},
-
-
 	documentDeleteFailed:function(sender,event) {
-		this.doErrorReceived({error:"Failed to delete document."});
+		this.doErrorReceived({error:"Failed to delete document(s)."});
 	},
 
 	closeDeletePopup:function() {

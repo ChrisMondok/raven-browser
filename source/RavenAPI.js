@@ -76,8 +76,20 @@ enyo.kind({
 	deleteDocument:function(tenantId, documentId) {
 		return new enyo.Ajax({
 			method:"DELETE",
-			url:this.buildDocumentUrl(tenantId,documentId),
-			cacheBust:false,
+			url:this.buildDocumentUrl(tenantId,documentId)
+		}).go();
+	},
+	bulkDeleteDocuments:function(tenantId, documentIds) {
+		return new enyo.Ajax({
+			method:"POST",
+			url:this.getRavenUrl()+"databases/"+tenantId+"/bulk_docs/",
+			postBody:JSON.stringify(
+				documentIds.map(function(docId) {
+					return {
+						Method:"DELETE",
+						Key: docId
+					};
+			}))
 		}).go();
 	},
 	moveDocument:function(fromTenant, fromDocumentId, toTenant, toDocumentId) {

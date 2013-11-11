@@ -7,7 +7,7 @@ enyo.kind({
 	},
 	events:{
 		onDocumentSelected:"",
-		onTenantSelected:"",
+		onTenantSelected:""
 	},
 	handlers:{
 		onTenantSelected:"selectTenant",
@@ -19,10 +19,10 @@ enyo.kind({
 		onPageSizeChanged:"setPageSize",
 		onFetchDocumentCountChanged:"fetchDocumentCountChanged",
 		onSecureChanged:"secureChanged",
-		oncontextmenu:"contextMenu",
+		oncontextmenu:"contextMenu"
 	},
 	components:[
-		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", draggable:false, arrangerKind:"CollapsingArranger", components:[
+		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
 			{kind:"FittableRows", classes:"panel", components:[
 				{name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
 				{kind:"onyx.Toolbar", components:[
@@ -31,17 +31,17 @@ enyo.kind({
 				]}
 			]},
 			{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
-			{kind:"RavenBrowser.DocumentViewer", classes:"panel"},
+			{kind:"RavenBrowser.DocumentViewer", classes:"panel"}
 		]},
 		{name:"settingsPopup", classes:"max-width-column onyx-light", style:"width:320px", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
 			{kind:"Scroller", style:"max-height:360px", components:[
-				{name:"settings", kind:"RavenBrowser.Settings"},
+				{name:"settings", kind:"RavenBrowser.Settings"}
 			]},
-			{kind:"onyx.Button", classes:"max-width onyx-dark", style:"margin-top:1em", content:"Close", ontap:"hideSettings"},
+			{kind:"onyx.Button", classes:"max-width onyx-dark", style:"margin-top:1em", content:"Close", ontap:"hideSettings"}
 		]},
 		{name:"infoPopup", ontap:"hideInfoPopup", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
-			{name:"infoPopupContent", content:"Info popup"},
-		]},
+			{name:"infoPopupContent", content:"Info popup"}
+		]}
 	],
 	create:function() {
 		this.inherited(arguments);
