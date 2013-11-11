@@ -44,11 +44,10 @@ enyo.kind({
 	},
 
 	gotResults:function(ajax,response) {
-		var skipped = response.SkippedResults,
-			results = this.getResults();
+		var results = this.getResults();
 
 		for(var i = 0; i < response.Results.length; i++)
-			results[skipped+i] = response.Results[i];
+			results.push(response.Results[i]);
 
 		this.gotProgress(response);
 
