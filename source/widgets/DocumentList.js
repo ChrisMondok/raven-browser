@@ -64,7 +64,7 @@ enyo.kind({
 				{name:"documentId"}
 			]}
 		]},
-		{name:"loadingDrawer", kind:"onyx.Drawer", classes:"footer-drawer", components:[
+		{name:"loadingDrawer", kind:"onyx.Drawer", classes:"footer-drawer", open:false, components:[
 			{name:"loadingDescription", style:"text-align:center; font-size:0.75em;", content:"Select a tenant"},
 			{name:"loadingBar", barClasses:"onyx-dark", kind:"onyx.ProgressBar", animateStripes:true}
 		]},
