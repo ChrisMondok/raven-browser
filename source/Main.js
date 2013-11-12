@@ -24,7 +24,7 @@ enyo.kind({
 	components:[
 		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
 			{kind:"FittableRows", classes:"panel", components:[
-				{name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"panel not-so-large"},
+				{name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"not-so-large"},
 				{kind:"onyx.Toolbar", components:[
 					{kind:"onyx.Button", content:"Reload", ontap:"reloadTenants"},
 					{kind:"onyx.Button", content:"Settings", ontap:"showSettings"}
