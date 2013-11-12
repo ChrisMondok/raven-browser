@@ -230,15 +230,18 @@ enyo.kind({
 			if(this.entityTypes.length) {
 				if(eType) {
 					var eHue = 360*this.entityTypes.indexOf(eType)/this.entityTypes.length;
+					this.$.divider.applyStyle("background-color","hsl("+eHue+",50%,50%)");
 					this.$.divider.applyStyle("background-image","linear-gradient(90deg, hsl("+eHue+",50%,50%) 0%, #EAEAEA 100%)");
 					this.$.divider.applyStyle("color","black");
 				}
 				else {
+					this.$.divider.applyStyle("background-color","#333");
 					this.$.divider.applyStyle("background-image","linear-gradient(90deg, #333333 0%, #EAEAEA 100%)");
-				this.$.divider.applyStyle("color","white");
+					this.$.divider.applyStyle("color","white");
 				}
 			}
 			else {
+				this.$.divider.applyStyle("background-color","#EAEAEA");
 				this.$.divider.applyStyle("background-image","none");
 			}
 			break;
@@ -246,6 +249,7 @@ enyo.kind({
 			this.$.divider.setContent(doc.__document_id.charAt(0).toUpperCase());
 			this.$.divider.setShowing(!docs[event.index-1] || doc.__document_id.charAt(0) != docs[event.index-1].__document_id.charAt(0));
 			this.$.item.applyStyle("border-left","none");
+			this.$.divider.applyStyle("background-color","#333");
 			this.$.divider.applyStyle("background-image","linear-gradient(90deg, #333333 0%, #EAEAEA 100%)");
 			this.$.divider.applyStyle("color","white");
 			break;
