@@ -22,22 +22,26 @@ enyo.kind({
 		oncontextmenu:"contextMenu"
 	},
 	components:[
-		{name:"slidingPanels", kind:"enyo.Panels", style:"width:100%", fit:true, classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
-			{kind:"FittableRows", classes:"panel", components:[
-				{name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"not-so-large"},
-				{kind:"onyx.Toolbar", components:[
-					{kind:"onyx.Button", content:"Reload", ontap:"reloadTenants"},
-					{kind:"onyx.Button", content:"Settings", ontap:"showSettings"}
+		{name:"screenPanel", kind:"enyo.Panels", arrangerKind:"CardSlideInArranger", fit:true, draggable:false, components:[
+			{name:"slidingPanels", kind:"enyo.Panels", classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
+				{kind:"FittableRows", classes:"panel", components:[
+					{name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"not-so-large"},
+					{kind:"onyx.Toolbar", components:[
+						{kind:"onyx.Button", content:"Reload", ontap:"reloadTenants"},
+						{kind:"onyx.Button", content:"Settings", ontap:"showSettings"}
+					]}
+				]},
+				{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
+				{kind:"RavenBrowser.DocumentViewer", classes:"panel"}
+			]},
+			{kind:"FittableRows", components:[
+				{kind:"Scroller", fit:true, style:"background-color:#CCC", components:[
+					{name:"settings", kind:"RavenBrowser.Settings"}
+				]},
+				{kind:"onyx.Toolbar", classes:"centered", components:[
+					{kind:"onyx.Button", content:"Close", style:"width:320px;", ontap:"showMain"}
 				]}
-			]},
-			{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
-			{kind:"RavenBrowser.DocumentViewer", classes:"panel"}
-		]},
-		{name:"settingsPopup", classes:"onyx-light", style:"max-width:100%; min-width:300px;", floating:true, scrim:true, centered:true, kind:"onyx.Popup", components:[
-			{kind:"Scroller", style:"max-height:360px", components:[
-				{name:"settings", kind:"RavenBrowser.Settings"}
-			]},
-			{kind:"onyx.Button", classes:"max-width onyx-dark", content:"Close", ontap:"hideSettings"}
+			]}
 		]}
 	],
 	create:function() {
@@ -92,10 +96,10 @@ enyo.kind({
 		enyo.create({kind:"onyx.Toast", content:event.error});
 	},
 	showSettings:function(event) {
-		this.$.settingsPopup.show();
+		this.$.screenPanel.setIndex(1);
 	},
-	hideSettings:function(sender,event) {
-		this.$.settingsPopup.hide();
+	showMain:function(sender,event) {
+		this.$.screenPanel.setIndex(0);
 	},
 	connectionChanged:function(sender,event) {
 		this.$.tenantPicker.loadTenants();

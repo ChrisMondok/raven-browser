@@ -203,3 +203,13 @@ textarea {
 {
 	text-align:center;
 }
+
+.settings
+{
+	max-width:480px;
+	min-height:100%;
+	margin:0 auto;
+	box-sizing:border-box;
+	padding:1em;
+	background-color:#EEE
+}

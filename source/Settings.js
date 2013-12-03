@@ -1,6 +1,7 @@
 enyo.kind({
 	name:"RavenBrowser.Settings",
 	kind:"FittableRows",
+	classes:"settings",
 	published:{
 		api:null,
 		sortFunction:"Entity Type",
@@ -32,9 +33,9 @@ enyo.kind({
 				{name:"pageSizeSlider", kind:"onyx.Slider", min:1, max:1024, increment:1, value:1024, onChange:"setPageSize", onChanging:"updatePageSizeLabel"},
 				{style:"padding:0em 0.5em", components:[
 					{content:"1", style:"display:inline-block; text-align:left; width:50%"},
-					{content:"1024", style:"display:inline-block; text-align:right; width:50%"},
-				]},
-			]},
+					{content:"1024", style:"display:inline-block; text-align:right; width:50%"}
+				]}
+			]}
 		]},
 		{kind:"onyx.Groupbox", style:"margin-top:1em; margin-bottom:1em", components:[
 			{kind:"onyx.GroupboxHeader", content:"Document Picker"},
