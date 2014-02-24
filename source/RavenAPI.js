@@ -105,14 +105,5 @@ enyo.kind({
 			":",
 			this.getRavenPort(),
 			"/"].join('');
-	},
-	ravenHostChanged:function() {
-		this.doConnectionChanged();
-	},
-	ravenPortChanged:function() {
-		this.doConnectionChanged();
-	},
-	secureChanged:function() {
-		this.doConnectionChanged();
 	}
 });

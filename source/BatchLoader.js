@@ -37,7 +37,6 @@ enyo.kind({
 		this.ajax = new enyo.Ajax({
 			url:this.getUrl()
 		})
-			//.go(params)
 			.go(this.params)
 			.response(this,"gotResults")
 			.error(this,"gotError");

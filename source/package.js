@@ -3,6 +3,7 @@ enyo.depends(
 	"$lib/onyx",
 
 	"widgets",
+    "data",
 
 	"DocumentPicker.js",
 	"DocumentViewer.js",

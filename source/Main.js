@@ -2,88 +2,94 @@ enyo.kind({
 	name: "RavenBrowser.Main",
 	kind: "FittableRows",
 	fit: true,
-	published:{
-		api:null
+	published: {
+		api: null,
+        source: null
 	},
-	events:{
-		onDocumentSelected:"",
-		onTenantSelected:""
+	events: {
+		onDocumentSelected: "",
+		onTenantSelected: ""
 	},
-	handlers:{
-		onTenantSelected:"selectTenant",
-		onDocumentSelected:"selectDocument",
-		onErrorReceived:"showError",
-		onShowSettings:"showSettings",
-		onConnectionChanged:"connectionChanged",
-		onSortFunctionChanged:"setSortFunction",
-		onPageSizeChanged:"setPageSize",
-		onFetchDocumentCountChanged:"fetchDocumentCountChanged",
-		onSecureChanged:"secureChanged",
-		oncontextmenu:"contextMenu"
+	handlers: {
+		onTenantSelected: "selectTenant",
+		onDocumentSelected: "selectDocument",
+		onErrorReceived: "showError",
+		onShowSettings: "showSettings",
+		onSortFunctionChanged: "setSortFunction",
+		onPageSizeChanged: "setPageSize",
+		onFetchDocumentCountChanged: "fetchDocumentCountChanged",
+		onSecureChanged: "secureChanged",
+		oncontextmenu: "contextMenu"
 	},
-	components:[
-		{name:"screenPanel", kind:"enyo.Panels", arrangerKind:"CardSlideInArranger", fit:true, draggable:false, components:[
-			{name:"slidingPanels", kind:"enyo.Panels", classes:"main-panels", arrangerKind:"CollapsingArranger", components:[
-				{kind:"FittableRows", classes:"panel", components:[
-					{name:"tenantPicker", fit:true, kind:"RavenBrowser.TenantPicker", classes:"not-so-large"},
-					{kind:"onyx.Toolbar", components:[
-						{kind:"onyx.Button", content:"Reload", ontap:"reloadTenants"},
-						{kind:"onyx.Button", content:"Settings", ontap:"showSettings"}
+
+    bindings:[
+        {from: '.$.settings.connectionString', to: '.connectionString'},
+        {from: '.$.settings.sortFunction', to: '.$.documentPicker.sortFunction'},
+        {from: '.$.settings.fetchDocumentCount', to: '.$.tenantPicker.fetchDocumentCount'},
+
+        //THESE WILL GO AWAY SOON.
+        {from: '.$.settings.host', to: '.$.ravenApi.host'},
+        {from: '.$.settings.port', to: '.$.ravenApi.port'},
+        {from: '.$.settings.pageSize', to: '.$.ravenApi.pageSize'},
+        {from: '.$.settings.secure', to: '.$.settings.secure'}
+    ],
+
+	components: [
+        {kind: 'RavenApi'},
+		{name: "screenPanel", kind: "enyo.Panels", arrangerKind: "CardSlideInArranger", fit: true, draggable: false, components: [
+			{name: "slidingPanels", kind: "enyo.Panels", classes: "main-panels", arrangerKind: "CollapsingArranger", components: [
+				{kind: "FittableRows", classes: "panel", components: [
+					{name: "tenantPicker", fit: true, kind: "RavenBrowser.TenantPicker", classes: "not-so-large"},
+					{kind: "onyx.Toolbar", components: [
+						{kind: "onyx.Button", content: "Reload", ontap: "reloadTenants"},
+						{kind: "onyx.Button", content: "Settings", ontap: "showSettings"}
 					]}
 				]},
-				{name:"documentPicker", kind:"RavenBrowser.DocumentPicker", classes:"panel not-so-large"},
-				{kind:"RavenBrowser.DocumentViewer", classes:"panel"}
+				{name: "documentPicker", kind: "RavenBrowser.DocumentPicker", classes: "panel not-so-large"},
+				{kind: "RavenBrowser.DocumentViewer", classes: "panel"}
 			]},
-			{kind:"FittableRows", components:[
-				{kind:"Scroller", fit:true, style:"background-color:#CCC", components:[
-					{name:"settings", kind:"RavenBrowser.Settings"}
+			{kind: "FittableRows", components: [
+				{kind: "Scroller", fit: true, style: "background-color: #CCC", components: [
+					{name: "settings", kind: "RavenBrowser.Settings"}
 				]},
-				{kind:"onyx.Toolbar", classes:"centered", components:[
-					{kind:"onyx.Button", content:"Close", style:"width:320px;", ontap:"showMain"}
+				{kind: "onyx.Toolbar", classes: "centered", components: [
+					{kind: "onyx.Button", content: "Close", style: "width: 320px;", ontap: "showMain"}
 				]}
 			]}
 		]}
 	],
-	create:function() {
+	create: function() {
 		this.inherited(arguments);
 
 		enyo.dispatcher.listen(document,'contextmenu');
 		enyo.dispatcher.listen(document,'keydown');
 
-		var host = localStorage.getItem("raven-host") || "localhost";
-		var port = localStorage.getItem("raven-port") || 8080;
-		var sortFunction = localStorage.getItem("sort-function") || "Entity Type";
-		var pageSize = localStorage.getItem('page-size') || 1024;
+        this.createSource();
 
-		var secure = JSON.parse(localStorage.getItem('secure'));
-		if(secure === undefined || secure === null)
-			secure = true;
+        window.M = this;
 
-		var fetchDocumentCount = JSON.parse(localStorage.getItem('fetch-document-count'));
-		if(fetchDocumentCount === undefined || fetchDocumentCount === null)
-			fetchDocumentCount = true;
-
-		this.$.settings.setSortFunction(sortFunction);
-		this.$.settings.setFetchDocumentCount(fetchDocumentCount);
-		this.$.settings.setSecure(secure);
-		this.$.documentPicker.setSortFunction(sortFunction);
-		this.$.tenantPicker.setFetchDocumentCount(fetchDocumentCount);
-
-		this.setApi(this.createComponent({kind:"RavenApi", ravenHost:host, ravenPort: port, pageSize:pageSize, secure:secure}));
+        this.apiChanged();
 	},
-	reloadTenants:function() {
+    createSource: function() {
+        this.setSource(new RavenSource());
+        enyo.store.addSources({raven:this.getSource()});
+    },
+    connectionStringChanged: function(old, connectionString) {
+        this.getSource().set('urlRoot', connectionString);
+    },
+	reloadTenants: function() {
 		this.$.tenantPicker.loadTenants();
 	},
-	selectTenant:function(sender,event) {
+	selectTenant: function(sender,event) {
 		var tenant = event.tenant;
 		this.$.documentPicker.setTenantId(tenant);
 		this.$.documentViewer.setTenantId(tenant);
-		this.doDocumentSelected({documentId:null});
+		this.doDocumentSelected({documentId: null});
 		if(enyo.Panels.isScreenNarrow())
 			this.$.slidingPanels.setIndex(1);
 	},
-	selectDocument:function(sender,event) {
-	var selectedDocument = event.documentId;
+	selectDocument: function(sender,event) {
+        var selectedDocument = event.documentId;
 		this.$.documentViewer.setDocumentId(selectedDocument);
 		if(selectedDocument)
 		{
@@ -92,43 +98,18 @@ enyo.kind({
 				this.$.slidingPanels.setIndex(2);
 		}
 	},
-	showError:function(sender,event) {
-		enyo.create({kind:"onyx.Toast", content:event.error});
+	showError: function(sender,event) {
+		enyo.create({kind: "onyx.Toast", content: event.error});
 	},
-	showSettings:function(event) {
+	showSettings: function(event) {
 		this.$.screenPanel.setIndex(1);
 	},
-	showMain:function(sender,event) {
+	showMain: function(sender,event) {
 		this.$.screenPanel.setIndex(0);
 	},
-	connectionChanged:function(sender,event) {
-		this.$.tenantPicker.loadTenants();
-
-		this.doTenantSelected({tenant:null});
-
-		localStorage.setItem("raven-host",this.getApi().getRavenHost());
-	},
-	apiChanged:function() {
-		this.$.tenantPicker.setApi(this.getApi());
-		this.$.documentPicker.setApi(this.getApi());
-		this.$.documentViewer.setApi(this.getApi());
-		this.$.settings.setApi(this.getApi());
-	},
-	setSortFunction:function(sender,event) {
-		this.$.documentPicker.setSortFunction(event.sortFunction);
-		localStorage.setItem('sort-function', event.sortFunction);
-	},
-	setPageSize:function(sender,event) {
-		this.getApi().setPageSize(event.pageSize);
-		localStorage.setItem('page-size',event.pageSize);
-	},
-	fetchDocumentCountChanged:function(sender,event) {
-		this.$.tenantPicker.setFetchDocumentCount(event.fetchDocumentCount);
-		localStorage.setItem('fetch-document-count',event.fetchDocumentCount);
-	},
-	secureChanged:function(sender,event) {
-		if(this.getApi())
-			this.getApi().setSecure(event.secure);
-		localStorage.setItem('secure',event.secure);
+	apiChanged: function() {
+		this.$.tenantPicker.setApi(this.$.ravenApi);
+		this.$.documentPicker.setApi(this.$.ravenApi);
+		this.$.documentViewer.setApi(this.$.ravenApi);
 	}
 });
