@@ -11,11 +11,6 @@ enyo.kind({
 	progressHandlers:null,
 	ajax:null,
 
-	progress:function(/* [inContext], inResponder */) {
-		this.accumulate(this.progressHandlers,arguments);
-		return this;
-	},
-
 	constructor:function(params) {
 		enyo.mixin(this,params);
 		if(!this.params)

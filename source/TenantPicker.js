@@ -61,7 +61,7 @@ enyo.kind({
 	renderTenant:function(sender,event) {
 		var tenant = this.getTenants()[event.index];
 		this.$.tenantName.setContent(tenant.id);
-		this.$.documentCount.setContent(tenant.documentCount);
+		this.$.documentCount.setContent(tenant.documentCount || null);
 		this.$.item.addRemoveClass("selected",sender.isSelected(event.index));
 		return true;
 	},
