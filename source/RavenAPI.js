@@ -13,7 +13,7 @@ enyo.kind({
 	},
 	getTenants:function() {
 		return new enyo.Ajax({url:this.getRavenUrl()+"databases", timeout:this.getTimeout()})
-			.go();
+			.go({pageSize: 1024});
 	},
 	ensureStartup:function(tenantId) {
 		return new enyo.Ajax({url:this.getRavenUrl()+"databases/"+tenantId+"/silverlight/ensureStartup"})
