@@ -273,16 +273,17 @@ enyo.kind({
 	},
 
 	applyFilter:function() {
-		var filtered = new Array(),
-			filterString = this.getFilterString(),
-			unfiltered = this.getDocuments();
+		var filterString = this.getFilterString();
 
-		for(var i in unfiltered) {
-			if(!filterString || unfiltered[i].__document_id.indexOf(filterString) != -1)
-				filtered.push(unfiltered[i]);
-		}
+        if(!filterString)
+            this.setFilteredDocuments(this.getDocuments());
+        else {
+            filterString = filterString.toLowerCase();
 
-		this.setFilteredDocuments(filtered);
+            this.setFilteredDocuments(this.getDocuments().filter(function(doc) {
+                return doc.__document_id.toLowerCase().indexOf(filterString) != -1;
+            }));
+        }
 	},
 
 	filteredDocumentsChanged:function() {
